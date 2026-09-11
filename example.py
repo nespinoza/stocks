@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import utils
 
 # Get stock data from Facebook (FB), Microsoft (MSFT), Apple (AAPL), Amazon (AMZN) and Google (GOOG and GOOGL):
-tickers = ['FB', 'MSFT', 'AAPL', 'AMZN', 'GOOG', 'GOOGL']
+tickers = ['META', 'MSFT', 'AAPL', 'AMZN', 'GOOG', 'GOOGL']
+
 
 # Extract data for last 10 years, each week:
 data = utils.get_stock_data(tickers, period = '120mo', interval = '1wk')

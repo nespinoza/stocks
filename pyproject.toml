@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stock-movement-api"
+version = "0.1.0"
+description = "Small stock forecasting API with joint Gaussian processes"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "pydantic>=2.9,<3", "numpy>=1.26,<3",
+  "scipy>=1.13,<2", "pandas>=2.2,<3", "yfinance>=0.2.54,<1",
+  "exchange-calendars>=4.5,<5",
+]
+
+[project.optional-dependencies]
+http = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1"]
+dev = ["pytest>=8,<9", "httpx>=0.27,<1", "fastapi>=0.115,<1"]
+plots = ["matplotlib>=3.8,<4"]
+
+[tool.setuptools.packages.find]
+include = ["stock_api*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
