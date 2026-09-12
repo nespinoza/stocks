@@ -1,0 +1,29 @@
+{
+  "source_checkpoints_preserved": 11,
+  "resume_queued_units": 0,
+  "resolved_local_links": 77,
+  "status": {
+    "output": "/Users/newen/github/stocks/historical_validation/smoke/AMZN-production-one-origin-v2",
+    "experiment_id": "c7a21e15e99d6426e309d11a3cf4b916e75a0c0b1ec0a5c84ad5944d44874cd5",
+    "total": 9,
+    "latest_progress": {
+      "completed": 9,
+      "current": [],
+      "elapsed_seconds": 0.1093264579976676,
+      "failures": 0,
+      "fraction": 1.0,
+      "heartbeat_utc": "2026-09-12T07:07:26.550639+00:00",
+      "pid": 18231,
+      "ticker": "AMZN",
+      "total": 9
+    },
+    "completed": 9,
+    "pending": 0,
+    "status_counts": {
+      "ok": 9
+    },
+    "summed_unit_runtime_hours": 0.02997351679388885
+  },
+  "test_suite_passed": 155,
+  "historical_tests_passed": 22
+}

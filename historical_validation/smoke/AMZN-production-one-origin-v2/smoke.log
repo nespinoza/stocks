@@ -1,0 +1,46 @@
+Experiment c7a21e15e99d6426e309d11a3cf4b916e75a0c0b1ec0a5c84ad5944d44874cd5: 0/9 saved; 9 units queued
+{"ticker": "AMZN", "completed": 0, "total": 9, "failures": 0, "current": ["2025-11-03__last_price__30"], "fraction": 0.0, "elapsed_seconds": 0.1058498749989667, "heartbeat_utc": "2026-09-12T07:04:28.471101+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 1, "total": 9, "failures": 0, "current": "2025-11-03__last_price__30", "fraction": 0.1111111111111111, "elapsed_seconds": 0.11375062499428168}
+{"ticker": "AMZN", "completed": 1, "total": 9, "failures": 0, "current": ["2025-11-03__gp__30"], "fraction": 0.1111111111111111, "elapsed_seconds": 0.11413883399654878, "heartbeat_utc": "2026-09-12T07:04:28.479391+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 2, "total": 9, "failures": 0, "current": "2025-11-03__gp__30", "fraction": 0.2222222222222222, "elapsed_seconds": 1.6241882920003263}
+{"ticker": "AMZN", "completed": 2, "total": 9, "failures": 0, "current": ["2025-11-03__multitask_gp__30"], "fraction": 0.2222222222222222, "elapsed_seconds": 1.6246309999987716, "heartbeat_utc": "2026-09-12T07:04:29.989886+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 3, "total": 9, "failures": 0, "current": "2025-11-03__multitask_gp__30", "fraction": 0.3333333333333333, "elapsed_seconds": 8.852230583994242}
+{"ticker": "AMZN", "completed": 3, "total": 9, "failures": 0, "current": ["2025-11-03__var__30"], "fraction": 0.3333333333333333, "elapsed_seconds": 8.852639041993825, "heartbeat_utc": "2026-09-12T07:04:37.217905+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 4, "total": 9, "failures": 0, "current": "2025-11-03__var__30", "fraction": 0.4444444444444444, "elapsed_seconds": 8.86173508399952}
+{"ticker": "AMZN", "completed": 4, "total": 9, "failures": 0, "current": ["2025-11-03__gbm_zero_drift__30"], "fraction": 0.4444444444444444, "elapsed_seconds": 8.862070124996535, "heartbeat_utc": "2026-09-12T07:04:37.227335+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 5, "total": 9, "failures": 0, "current": "2025-11-03__gbm_zero_drift__30", "fraction": 0.5555555555555556, "elapsed_seconds": 8.871274375000212}
+{"ticker": "AMZN", "completed": 5, "total": 9, "failures": 0, "current": ["2025-11-03__gbm_estimated_drift__30"], "fraction": 0.5555555555555556, "elapsed_seconds": 8.871600833997945, "heartbeat_utc": "2026-09-12T07:04:37.236866+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 6, "total": 9, "failures": 0, "current": "2025-11-03__gbm_estimated_drift__30", "fraction": 0.6666666666666666, "elapsed_seconds": 8.880450833996292}
+{"ticker": "AMZN", "completed": 6, "total": 9, "failures": 0, "current": ["2025-11-03__ou_returns__30"], "fraction": 0.6666666666666666, "elapsed_seconds": 8.88076524999633, "heartbeat_utc": "2026-09-12T07:04:37.246030+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 7, "total": 9, "failures": 0, "current": "2025-11-03__ou_returns__30", "fraction": 0.7777777777777778, "elapsed_seconds": 8.889594959000533}
+{"ticker": "AMZN", "completed": 7, "total": 9, "failures": 0, "current": ["2025-11-03__volatility_gp_returns__30"], "fraction": 0.7777777777777778, "elapsed_seconds": 8.889929999997548, "heartbeat_utc": "2026-09-12T07:04:37.255195+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 7, "total": 9, "failures": 0, "current": ["2025-11-03__volatility_gp_returns__30"], "fraction": 0.7777777777777778, "elapsed_seconds": 31.716228958997817, "heartbeat_utc": "2026-09-12T07:05:00.081529+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 8, "total": 9, "failures": 0, "current": "2025-11-03__volatility_gp_returns__30", "fraction": 0.8888888888888888, "elapsed_seconds": 37.338847249993705}
+{"ticker": "AMZN", "completed": 8, "total": 9, "failures": 0, "current": ["2025-11-03__heteroskedastic_gp_returns__30"], "fraction": 0.8888888888888888, "elapsed_seconds": 37.339212791994214, "heartbeat_utc": "2026-09-12T07:05:05.704521+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 8, "total": 9, "failures": 0, "current": ["2025-11-03__heteroskedastic_gp_returns__30"], "fraction": 0.8888888888888888, "elapsed_seconds": 68.14939691699692, "heartbeat_utc": "2026-09-12T07:05:36.514752+00:00", "pid": 18120}
+{"ticker": "AMZN", "completed": 9, "total": 9, "failures": 0, "current": "2025-11-03__heteroskedastic_gp_returns__30", "fraction": 1.0, "elapsed_seconds": 108.07288049999624}
+{"ticker": "AMZN", "completed": 9, "total": 9, "failures": 0, "current": [], "fraction": 1.0, "elapsed_seconds": 108.07334062500013, "heartbeat_utc": "2026-09-12T07:06:16.438756+00:00", "pid": 18120}
+historical_validation/smoke/AMZN-production-one-origin-v2/index.html
+{
+  "output": "/Users/newen/github/stocks/historical_validation/smoke/AMZN-production-one-origin-v2",
+  "experiment_id": "c7a21e15e99d6426e309d11a3cf4b916e75a0c0b1ec0a5c84ad5944d44874cd5",
+  "total": 9,
+  "latest_progress": {
+    "completed": 9,
+    "current": [],
+    "elapsed_seconds": 108.07334062500013,
+    "failures": 0,
+    "fraction": 1.0,
+    "heartbeat_utc": "2026-09-12T07:06:16.438756+00:00",
+    "pid": 18120,
+    "ticker": "AMZN",
+    "total": 9
+  },
+  "completed": 9,
+  "pending": 0,
+  "status_counts": {
+    "ok": 9
+  },
+  "summed_unit_runtime_hours": 0.02997351679388885
+}
+SMOKE ONLY: one production-budget origin

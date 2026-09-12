@@ -16,6 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 diagnostics = ["dynesty>=3,<4", "matplotlib>=3.8,<4"]
+historical = ["dynesty>=3,<4", "matplotlib>=3.8,<4", "threadpoolctl>=3,<4"]
 http = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1"]
 dev = ["pytest>=8,<9", "httpx>=0.27,<1", "fastapi>=0.115,<1"]
 plots = ["matplotlib>=3.8,<4"]

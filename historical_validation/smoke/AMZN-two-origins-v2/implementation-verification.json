@@ -1,0 +1,30 @@
+{
+  "source_checkpoints_preserved": 20,
+  "resume_queued_units": 0,
+  "resolved_local_links": 85,
+  "status": {
+    "output": "/Users/newen/github/stocks/historical_validation/smoke/AMZN-two-origins-v2",
+    "experiment_id": "15549d7d96515af82ed18e5777cb02cbd00ffab069e69d9d57ac36beecdffa65",
+    "total": 18,
+    "latest_progress": {
+      "completed": 18,
+      "current": [],
+      "elapsed_seconds": 0.09147862499958137,
+      "failures": 6,
+      "fraction": 1.0,
+      "heartbeat_utc": "2026-09-12T07:07:30.131808+00:00",
+      "pid": 18231,
+      "ticker": "AMZN",
+      "total": 18
+    },
+    "completed": 18,
+    "pending": 0,
+    "status_counts": {
+      "ok": 12,
+      "inference_failed": 6
+    },
+    "summed_unit_runtime_hours": 0.003513458657232857
+  },
+  "test_suite_passed": 155,
+  "historical_tests_passed": 22
+}

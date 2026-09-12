@@ -10,7 +10,7 @@ from stock_api.heteroskedastic import _kernel, _objective, fit_latent_returns, J
 
 class GaussianProblem:
     quantity = 'log marginal likelihood'
-    def __init__(self, prices, name, priors):
+    def __init__(self, prices, name, priors, *, fit_old=True):
         self.name,self.priors=name,priors
         self.prices=prices.iloc[:,:1] if name=='gp' else prices
         logs=np.log(self.prices.to_numpy())
@@ -20,8 +20,12 @@ class GaussianProblem:
         self.names=['ell']+[f'A_{t}' for t in self.prices.columns]+[f'noise_{t}' for t in self.prices.columns]
         self.bounds=np.log([priors.length]+[priors.price_amplitude_ratio]*self.tasks+[priors.price_noise_ratio]*self.tasks)
         self.old_bounds=np.log([[1,500]]+[[.01,10]]*self.tasks+[[.001,2]]*self.tasks)
-        _,_,self.old_info=MODELS[name](prices.to_numpy(),5)
-        self.old=np.log([self.old_info['length_scale'],*self.old_info['standardized_amplitudes'],*self.old_info['standardized_noises']])
+        if fit_old:
+            _,_,self.old_info=MODELS[name](prices.to_numpy(),5)
+            self.old=np.log([self.old_info['length_scale'],*self.old_info['standardized_amplitudes'],*self.old_info['standardized_noises']])
+        else:
+            self.old_info = {}
+            self.old = self.transform(np.full(len(self.names), .5))
         self.positive=np.ones(len(self.names),bool)
 
     def transform(self,u):
@@ -77,7 +81,7 @@ class GaussianProblem:
 
 class ReturnProblem:
     quantity = 'unregularized variational ELBO (approximate)'
-    def __init__(self,prices,name,priors):
+    def __init__(self,prices,name,priors,*,fit_old=True):
         self.name,self.priors=name,priors;self.prices=prices.iloc[:,:1]
         self.mean_gp=name=='heteroskedastic_gp_returns'
         self.returns=np.diff(np.log(prices.iloc[:,0].to_numpy()))
@@ -91,9 +95,13 @@ class ReturnProblem:
         if self.mean_gp:b += [np.log(np.array(priors.return_mean_amplitude_ratio)*self.scatter/self.scale),np.log(priors.length)]
         self.bounds=np.array(b)
         self.old_bounds=np.array([np.log([.03,3]),np.log([2,252]),[-6,3]]+([np.log([.01,2]),np.log([2,252])] if self.mean_gp else []))
-        old=fit_latent_returns(self.returns,mean_gp=self.mean_gp)
-        self.old=np.array([np.log(old['ag']),np.log(old['ellg']),old['mg']]+([np.log(old['af']),np.log(old['ellf'])] if self.mean_gp else []))
-        self.old_info={k:v for k,v in old.items() if isinstance(v,(float,int,str,bool))}
+        if fit_old:
+            old=fit_latent_returns(self.returns,mean_gp=self.mean_gp)
+            self.old=np.array([np.log(old['ag']),np.log(old['ellg']),old['mg']]+([np.log(old['af']),np.log(old['ellf'])] if self.mean_gp else []))
+            self.old_info={k:v for k,v in old.items() if isinstance(v,(float,int,str,bool))}
+        else:
+            self.old_info = {}
+            self.old = self.transform(np.full(len(self.names), .5))
         self.latent_initial=np.r_[np.zeros(self.n),np.full(self.n,np.log(.5))]
         self.latent_bounds=np.array([[-8,8]]*self.n+[[-12,6]]*self.n)
 

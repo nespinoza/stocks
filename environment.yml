@@ -5,4 +5,4 @@ dependencies:
   - python=3.13
   - pip
   - pip:
-      - -e .[dev,plots,http,diagnostics]
+      - -e .[dev,plots,http,diagnostics,historical]

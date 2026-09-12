@@ -357,3 +357,11 @@ simulation (no fees, execution, or corporate-action timing model).
 The service is intended for local experiments. Fits are bounded to four stocks,
 252 observations, and one concurrent forecast per worker. Larger datasets or
 production use warrant a job queue, data cache, and sparse/variational GPs.
+
+## Large historical validation
+
+The generic, resumable historical runner and frozen AMZN experiment are documented
+in [HISTORICAL_VALIDATION.md](HISTORICAL_VALIDATION.md). It supports arbitrary
+target/auxiliary tickers, weekly folds, Bayesian GP forecasts, atomic checkpoints,
+and reliability/calibration reports regenerated from saved forecasts.
+The full 2016–2026 experiment is prepared, **not started or scheduled**.

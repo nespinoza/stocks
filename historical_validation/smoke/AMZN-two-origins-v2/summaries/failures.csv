@@ -1,0 +1,7 @@
+unit_id,origin,model,lookback,status,reason
+2025-11-03__multitask_gp__30,2025-11-03,multitask_gp,30,inference_failed,Configured convergence checks failed
+2025-11-03__volatility_gp_returns__30,2025-11-03,volatility_gp_returns,30,inference_failed,Configured convergence checks failed
+2025-11-03__heteroskedastic_gp_returns__30,2025-11-03,heteroskedastic_gp_returns,30,inference_failed,Configured convergence checks failed
+2025-11-10__multitask_gp__30,2025-11-10,multitask_gp,30,inference_failed,Configured convergence checks failed
+2025-11-10__volatility_gp_returns__30,2025-11-10,volatility_gp_returns,30,inference_failed,Configured convergence checks failed
+2025-11-10__heteroskedastic_gp_returns__30,2025-11-10,heteroskedastic_gp_returns,30,inference_failed,Configured convergence checks failed

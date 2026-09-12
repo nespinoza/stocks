@@ -5,7 +5,7 @@ from stock_api.heteroskedastic import _kernel,_root,JITTER,paths_from_returns
 from stock_api.models import MODELS
 
 
-def draw_predictive(problem,samples,weights,latents,steps,config):
+def draw_predictive(problem,samples,weights,latents,steps,config,*,include_comparison=True):
     rng=np.random.default_rng(config.seed+1)
     selected=rng.choice(len(samples),size=config.predictive_draws,p=weights)
     paths=[];fs=[];sigmas=[]
@@ -38,6 +38,8 @@ def draw_predictive(problem,samples,weights,latents,steps,config):
         fs.append(problem.scale*f);sigmas.append(sigma)
     paths=np.asarray(paths)
     if not np.isfinite(paths).all():raise ValueError('Posterior price paths overflowed')
+    if not include_comparison:
+        return {'paths':paths,'f':np.asarray(fs),'sigma':np.asarray(sigmas)}
     _,_,old=MODELS[problem.name](problem.prices.to_numpy(),steps,seed=config.seed,n_paths=10000) if latents is not None else (None,None,None)
     if old is None:
         means,variances,_=MODELS[problem.name](problem.prices.to_numpy(),steps)

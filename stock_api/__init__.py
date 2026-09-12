@@ -12,3 +12,6 @@ __all__ += ["validate", "ValidationConfig", "ValidationResult", "ModelSpec", "Tr
 
 from stock_api.diagnostics import DiagnosticConfig, PriorConfig, diagnose_fold
 __all__ += ["DiagnosticConfig", "PriorConfig", "diagnose_fold"]
+
+from stock_api.historical import HistoricalConfig, run_historical_validation
+__all__ += ["HistoricalConfig", "run_historical_validation"]

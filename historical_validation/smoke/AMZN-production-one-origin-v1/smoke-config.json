@@ -1,0 +1,84 @@
+{
+  "target_ticker": "AMZN",
+  "auxiliary_tickers": [
+    "GOOGL",
+    "AAPL"
+  ],
+  "start_date": "2025-11-03",
+  "end_date": "2025-11-11",
+  "forecast_horizon_days": 7,
+  "origin_frequency": "weekly",
+  "lookbacks": [
+    30
+  ],
+  "models": [
+    "last_price",
+    "gp",
+    "multitask_gp",
+    "var",
+    "gbm_zero_drift",
+    "gbm_estimated_drift",
+    "ou_returns",
+    "volatility_gp_returns",
+    "heteroskedastic_gp_returns"
+  ],
+  "calendar": "XNYS",
+  "seed": 20260912,
+  "n_paths": 2000,
+  "min_train_observations": 10,
+  "inference_mode": "production_validation",
+  "inference": {
+    "enabled": true,
+    "profile_surfaces": false,
+    "posterior_sampling": true,
+    "multistart": false,
+    "latent_plots": false,
+    "corner_plots": false,
+    "priors": {
+      "length": [
+        0.5,
+        300.0
+      ],
+      "price_amplitude_ratio": [
+        0.001,
+        100.0
+      ],
+      "price_noise_ratio": [
+        0.0001,
+        10.0
+      ],
+      "return_mean_amplitude_ratio": [
+        0.001,
+        10.0
+      ],
+      "log_variance_amplitude": [
+        0.01,
+        3.0
+      ],
+      "log_variance_mean_sd": 2.0,
+      "log_variance_mean_truncation": 5.0,
+      "log_variance_inactive_amplitude": 0.1,
+      "inactive_amplitude_ratio": 0.1
+    },
+    "profile_points": 41,
+    "surface_points": 25,
+    "starts": 30,
+    "profile_maxiter": 600,
+    "nlive": 150,
+    "nested_dlogz": 0.1,
+    "nested_maxcall": 200000,
+    "interweave": true,
+    "chains": 4,
+    "warmup": 1500,
+    "draws": 5000,
+    "thin": 1,
+    "predictive_draws": 2000,
+    "seed": 42
+  },
+  "development_end": null,
+  "untouched_holdout_start": null,
+  "data_vintage": "retrospective_adjusted",
+  "min_bin_count": 2,
+  "bootstrap_replicates": 100,
+  "bootstrap_block_weeks": 8
+}
