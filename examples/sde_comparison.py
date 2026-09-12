@@ -23,6 +23,7 @@ def main():
     parser.add_argument('--lookbacks', type=int, nargs='+', default=[30,60,90,180])
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--n-paths', type=int, default=10_000)
+    parser.add_argument('--models', nargs='+', default=MODEL_NAMES, choices=list(builtin_models()))
     parser.add_argument('--prices', help='Existing daily adjusted-close CSV with date index')
     parser.add_argument('--output', help='New output directory; existing directories are refused')
     args = parser.parse_args()
@@ -42,7 +43,7 @@ def main():
     root.mkdir(parents=True,exist_ok=False)
     prices.to_csv(root/'prices.csv',index_label='date')
     registry = builtin_models(n_paths=args.n_paths)
-    models = {name:registry[name] for name in MODEL_NAMES}
+    models = {name:registry[name] for name in args.models}
     summaries = []
     import matplotlib
     matplotlib.use('Agg')
@@ -55,6 +56,18 @@ def main():
         summary = summary.assign(lookback_days=config.train_days)
         summaries.append(summary)
         pd.DataFrame(run.metrics).drop(columns=['diagnostics']).to_csv(root/f'folds-{config.train_days}.csv',index=False)
+        diagnostics = []
+        for metric in run.metrics:
+            info = metric['diagnostics']
+            if 'ell_sigma' in info:
+                diagnostics.append({
+                    'model':metric['model'], 'origin':metric['origin'],
+                    **{key:value for key,value in info.items() if not isinstance(value, (list, dict))},
+                    'realized_terminal_log_return':metric['terminal_actual_log_return'],
+                    'coverage_95':metric['coverage_95'],
+                    'terminal_brier_score':metric['terminal_brier_score']})
+        if diagnostics:
+            pd.DataFrame(diagnostics).to_csv(root/f'diagnostics-{config.train_days}.csv',index=False)
         ax = run.plot(show=False)
         ax.set_title(f'AMZN: {config.train_days}-calendar-day lookback, 7-calendar-day forecast')
         ax.figure.savefig(root/f'lookback-{config.train_days}.png',dpi=150)

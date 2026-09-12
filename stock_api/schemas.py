@@ -5,12 +5,14 @@ from pydantic import BaseModel, BeforeValidator, Field, StringConstraints, field
 
 Ticker = Annotated[str, StringConstraints(pattern=r"^[A-Z][A-Z0-9.-]{0,14}$"),
                    BeforeValidator(lambda v: v.strip().upper() if isinstance(v, str) else v)]
+ModelName = Literal["last_price", "random_walk", "gp", "multitask_gp", "var",
+                    "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns"]
 
 
 class ForecastRequest(BaseModel):
     ticker: Ticker
     related_tickers: list[Ticker] = Field(default_factory=list, max_length=3)
-    model: Literal["last_price", "random_walk", "gp", "multitask_gp", "var", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns"] = "multitask_gp"
+    model: ModelName | Annotated[list[ModelName], Field(min_length=1, max_length=10)] = "multitask_gp"
     horizon: int = Field(default=7, ge=1, le=30)
     horizon_unit: Literal["calendar", "trading"] = "calendar"
     lookback: int = Field(default=120, ge=60, le=252)
@@ -25,7 +27,11 @@ class ForecastRequest(BaseModel):
     @model_validator(mode="after")
     def remove_target(self):
         self.related_tickers = [t for t in self.related_tickers if t != self.ticker]
-        if self.model in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns") and self.related_tickers:
+        if isinstance(self.model, list):
+            if len(set(self.model)) != len(self.model):
+                raise ValueError('Model names must be unique')
+            return self
+        if self.model in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns") and self.related_tickers:
             raise ValueError(f"{self.model} uses only the target; omit related_tickers")
         return self
 
@@ -87,6 +93,34 @@ class ForecastResponse(BaseModel):
         sigmas selects 1/2/3 sigma intervals; () hides them. uncertainty is
         'bands' or 'errorbars'. Related prices are rebased to the target at
         as_of. Returns a Matplotlib Axes; show=False suppresses plt.show().
+        """
+        from stock_api.plotting import plot_result
+        return plot_result(self, history_days=history_days, forecast_days=forecast_days,
+                           sigmas=sigmas, show_related=show_related, show_fit=show_fit,
+                           uncertainty=uncertainty, ax=ax, figsize=figsize, show=show)
+
+
+class ForecastComparison(BaseModel):
+    """Forecasts from a shared price snapshot, indexed by model name."""
+    ticker: str
+    related_tickers: list[str]
+    as_of: str
+    last_close: float
+    horizon: int
+    horizon_unit: str
+    training_data: list[TrainingPoint]
+    results: dict[str, ForecastResponse]
+
+    def __getitem__(self, model):
+        return self.results[model]
+
+    def plot(self, *, history_days=None, forecast_days=None, sigmas=(1, 2, 3),
+             show_related=True, show_fit=True, uncertainty="bands", ax=None,
+             figsize=(12, 6), show=True):
+        """Overlay models: one color per model, dashed fits and solid forecasts.
+
+        Supports the same calendar-day display limits and sigma selection as
+        ForecastResponse.plot. Returns a Matplotlib Axes. No downloads or refits.
         """
         from stock_api.plotting import plot_result
         return plot_result(self, history_days=history_days, forecast_days=forecast_days,

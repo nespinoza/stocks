@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 from stock_api.data import calendar, latest_session, load_prices
 from stock_api.models import MODELS
 from stock_api.sde import SDE_MODELS, lognormal_statistics
+from stock_api.heteroskedastic import RETURN_GP_MODELS
 
 
 class ValidationConfig(BaseModel):
@@ -68,13 +69,17 @@ class _Builtin:
         if self.name in ('gp', 'multitask_gp'):
             kwargs = {'train_times': train.features['time'].to_numpy(),
                       'future_times': future['time'].to_numpy()}
-        if self.name in SDE_MODELS:
+        if self.name in (SDE_MODELS | RETURN_GP_MODELS):
             kwargs.update(rng=rng, n_paths=self.n_paths)
         mean, variance, diagnostics = MODELS[self.name](train.prices.to_numpy(), len(future), **kwargs)
         std = np.sqrt(variance)
         predicted = (np.full(len(future), train.prices.iloc[-1, 0])
                      if self.name in ('last_price', 'random_walk') else np.exp(mean))
-        statistics = lognormal_statistics(mean, variance, float(train.prices.iloc[-1, 0]))
+        statistics = diagnostics.pop('_statistics', None)
+        if statistics is None:
+            statistics = lognormal_statistics(mean, variance, float(train.prices.iloc[-1, 0]))
+        else:
+            predicted = statistics['median_price']
         result = pd.DataFrame({'predicted_close':predicted, **statistics}, index=future.index)
         ensemble = diagnostics.pop('_ensemble', None)
         result.attrs['diagnostics'] = diagnostics
@@ -87,8 +92,9 @@ def builtin_models(*, n_paths=10_000):
     """Fresh registry; callers may add ModelSpec entries for arbitrary regressors."""
     return {name: ModelSpec(lambda name=name: _Builtin(name, n_paths), version='2' if name == 'multitask_gp' else '1',
                            parameters={'implementation_sha256': _hash(inspect.getsource(MODELS[name]) +
-                                       (inspect.getsource(sys.modules['stock_api.sde']) if name in SDE_MODELS else '')),
-                                       **({'n_paths':n_paths} if name in SDE_MODELS else {})})
+                                       (inspect.getsource(sys.modules['stock_api.sde']) if name in SDE_MODELS else
+                                        inspect.getsource(sys.modules['stock_api.heteroskedastic']) if name in RETURN_GP_MODELS else '')),
+                                       **({'n_paths':n_paths} if name in (SDE_MODELS | RETURN_GP_MODELS) else {})})
             for name in MODELS}
 
 
@@ -161,6 +167,11 @@ class ValidationResult(BaseModel):
     metrics: list[dict]
     distributions: list[dict] = Field(default_factory=list)
 
+    def diagnose(self, origin, **kwargs):
+        """Opt-in inference diagnostics for one saved fold; no new validation run."""
+        from stock_api.diagnostics import diagnose_fold
+        return diagnose_fold(self, origin, **kwargs)
+
     def rerun(self, models):
         """Evaluate new models on this exact saved data/configuration, without downloads."""
         self._check_identity()
@@ -198,6 +209,8 @@ class ValidationResult(BaseModel):
                          'terminal_log_return_mae':pd.to_numeric(group.terminal_log_return_absolute_error).mean(),
                          'terminal_log_return_mae_pct':100*pd.to_numeric(group.terminal_log_return_absolute_error).mean(),
                          'terminal_brier_score':pd.to_numeric(group.terminal_brier_score).mean(),
+                         'terminal_return_mae':pd.to_numeric(group.terminal_log_return_absolute_error).mean(),
+                         'brier_score':pd.to_numeric(group.terminal_brier_score).mean(),
                          'mean_probability_up':pd.to_numeric(group.terminal_probability_up).mean(),
                          'realized_up_frequency':pd.to_numeric(group.terminal_actual_up).mean(),
                          'coverage_95':pd.to_numeric(group.coverage_95).mean()})

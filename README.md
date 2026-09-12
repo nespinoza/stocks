@@ -46,6 +46,35 @@ table = pd.DataFrame([point.model_dump() for point in result.forecasts])
 
 ### Plot the fit, training data, and forecast
 
+To compare models on the same downloaded history, pass a list:
+
+```python
+result = predict("AMZN", model=["gp", "last_price", "gbm_zero_drift", "ou_returns"])
+result.plot(history_days=30, forecast_days=7, sigmas=(2,))
+
+# Or include multivariate models; only those models use the related tickers.
+result = predict("AMZN", model=["gp", "multitask_gp", "var"],
+                 related_tickers=["GOOGL", "AAPL"])
+result.plot()  # all fits and forecasts, with 1/2/3σ bands
+gp_result = result["gp"]  # an ordinary single-model ForecastResponse
+```
+
+A string still returns `ForecastResponse`; a nonempty list of unique model
+names returns `ForecastComparison`, even when the list has only one model.
+All models share the forecast origin, training window, and forecast dates.
+The plot draws training data once, with a distinct color per model, dashed
+historical fits, solid forecasts, and matching uncertainty. Use `sigmas=(2,)`
+for a less crowded comparison, `uncertainty="errorbars"` for error bars,
+`show_fit=False` to hide fits, or `show=False` to customize/save the returned Axes.
+Single-ticker models in a comparison receive only the target's prices.
+
+`result.results` maps model names to their individual results.
+`result.model_dump_json()` saves the comparison, and
+`ForecastComparison.model_validate_json(saved_json).plot()` restores it offline
+(import `ForecastComparison` from `stock_api`). The HTTP `/predict` endpoint
+also accepts a model list. If a model fit fails, the comparison raises an error
+identifying that model rather than silently omitting it.
+
 Install the optional plotting dependency with `python -m pip install '.[plots]'`
 from the repository (the conda environment already includes it). Plotting is
 explicit and never happens just because you call `predict`:
@@ -83,7 +112,9 @@ The displayed fit and uncertainty are for the target only.
 `result.fitted` and `result.forecasts` both expose `predicted_close`, `log_std`,
 and `sigma_1`, `sigma_2`, `sigma_3` intervals with `.lower` and `.upper` values.
 For example, `result.forecasts[0].sigma_2.lower` gives the first forecast's
-lower 2σ bound. Each interval is `exp(log_mean ± n * log_std)`: Gaussian sigma
+lower 2σ bound. For the latent return GPs these are empirical central probability
+intervals at the same sigma levels; see [return-space GPs](RETURN_GP.md). For
+the other models each interval is `exp(log_mean ± n * log_std)`: Gaussian sigma
 levels in **log-price space**, approximately 68.27%, 95.45%, and 99.73% under
 the model. They are asymmetric in price units; the existing `lower_95` and
 `upper_95` forecast fields still use 1.96σ rather than 2σ.
@@ -182,7 +213,7 @@ Use `"model":"var"` with the same related tickers for autoregression. Use
 |---|---|---|
 | `ticker` | required | US-equity Yahoo symbol; normalized to uppercase |
 | `related_tickers` | `[]` | Up to 3 auxiliary stocks; duplicates/target removed |
-| `model` | `multitask_gp` | `gp`, `multitask_gp`, `var`, `last_price` (alias: `random_walk`), `gbm_zero_drift`, `gbm_estimated_drift`, `ou_returns` |
+| `model` | `multitask_gp` | `gp`, `multitask_gp`, `var`, `last_price` (alias: `random_walk`), `gbm_zero_drift`, `gbm_estimated_drift`, `ou_returns`, `volatility_gp_returns`, `heteroskedastic_gp_returns` |
 | `horizon` | `7` | 1–30 calendar days or trading sessions |
 | `horizon_unit` | `calendar` | `calendar` or `trading` |
 | `lookback` | `120` | 60–252 completed market sessions |
@@ -197,7 +228,8 @@ The response includes:
 
 Prices are **adjusted closing prices**, using explicit `auto_adjust=True`
 ([yfinance download reference](https://ranaroussi.github.io/yfinance/reference/api/yfinance.download.html)).
-`predicted_close` is the median of a lognormal forecast, not its arithmetic mean.
+`predicted_close` is the predictive median, not its arithmetic mean. Most models
+use lognormal marginals; the latent return GPs use variance-mixture distributions.
 Intervals are pointwise 95% model prediction intervals; `probability_up` is a
 model-derived probability, not an empirically calibrated success rate.
 
@@ -226,6 +258,13 @@ and each request downloads and refits.
 | 500 | Numerical model fit failed |
 
 ## Models
+
+**Return-space latent GPs:** `volatility_gp_returns` fixes expected log return
+to zero and infers time-varying volatility. `heteroskedastic_gp_returns` jointly
+infers mean return and volatility with separate Matérn-3/2 timescales. They use
+SciPy variational inference and Monte Carlo predictive paths through the same
+interfaces, including model-list plots. See [inference, usage, and benchmark
+results](RETURN_GP.md) for the approximation and price-moment limitation.
 
 The suite also includes `gbm_zero_drift`, `gbm_estimated_drift`, and `ou_returns`.
 They generate predictive ensembles with configurable `seed` and `n_paths`, and
@@ -269,6 +308,13 @@ Both advanced models estimate transformations from the supplied history only.
 Intervals condition on fitted parameters and omit parameter-estimation and
 regime-change uncertainty. No predictive advantage is assumed.
 
+## Inference diagnostics
+
+Use `run.diagnose(origin, ...)` to inspect a saved fold with configurable priors,
+log-grid profiles, multistart optimization, dynesty or joint latent-GP sampling,
+corner plots, and latent/forecast plots. This is opt-in and does not rerun
+validation. See [GP inference diagnostics](GP_DIAGNOSTICS.md).
+
 ## Test and evaluate
 
 For configurable monthly/weekly walk-forward validation, custom stochastic
@@ -299,7 +345,7 @@ Tests use deterministic synthetic prices and a mocked provider; no internet is
 needed. They check API validation/errors, holidays and completed-session logic,
 GP cross-ticker influence, constant series, and chronological evaluation windows.
 
-The evaluation command needs internet and compares all seven models on successive,
+The evaluation command needs internet and compares all nine models on successive,
 disjoint held-out windows. It refits on only the preceding `lookback` sessions and
 reports price MAE, final-session direction accuracy, and observed 95% interval
 coverage. Its horizon is always **trading sessions**. Five folds are only a smoke

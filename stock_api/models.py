@@ -152,3 +152,6 @@ MODELS = {"last_price":last_price, "random_walk":random_walk, "gp":gp,
 # SDE benchmarks use the same log-marginal / diagnostics interface.
 from stock_api.sde import SDE_MODELS
 MODELS.update(SDE_MODELS)
+
+from stock_api.heteroskedastic import RETURN_GP_MODELS
+MODELS.update(RETURN_GP_MODELS)

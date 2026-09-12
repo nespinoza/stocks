@@ -21,14 +21,16 @@ def evaluate(prices, lookback=120, horizon=7, folds=5):
         for start in range(len(prices)-folds*horizon, len(prices), horizon):
             train = prices[start-lookback:start]
             truth = prices[start:start+horizon, 0]
-            mean, variance, _ = model(train, horizon)
-            median = np.exp(mean)
+            mean, variance, diagnostics = model(train, horizon)
+            statistics = diagnostics.get('_statistics')
+            median = statistics['median_price'] if statistics is not None else np.exp(mean)
             errors.extend(np.abs(median-truth).tolist())
             direction = _direction(median[-1], train[-1, 0])
             if direction:
                 directions.append(bool(direction == _direction(truth[-1], train[-1, 0])))
-            coverage.extend(((np.log(truth) >= mean-1.96*np.sqrt(variance)) &
-                             (np.log(truth) <= mean+1.96*np.sqrt(variance))).tolist())
+            lower = statistics['lower_95'] if statistics is not None else np.exp(mean-1.96*np.sqrt(variance))
+            upper = statistics['upper_95'] if statistics is not None else np.exp(mean+1.96*np.sqrt(variance))
+            coverage.extend(((truth >= lower) & (truth <= upper)).tolist())
         accuracy = float(np.mean(directions)) if directions else None
         results[name] = {"mae":float(np.mean(errors)), "endpoint_direction_accuracy":accuracy,
                          "terminal_direction_accuracy":accuracy,

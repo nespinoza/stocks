@@ -66,7 +66,7 @@ def client(monkeypatch, prices):
 @pytest.mark.parametrize("name", MODELS)
 def test_api(client, name):
     payload = {"ticker":"amzn", "model":name, "lookback":60}
-    if name not in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns"):
+    if name not in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns"):
         payload["related_tickers"] = ["googl", "aapl"]
     response = client.post("/predict", json=payload)
     assert response.status_code == 200, response.text
@@ -158,7 +158,7 @@ def test_public_python_api_matches_http(client, name):
     from stock_api import predict, ForecastResponse
 
     kwargs = {"ticker": "amzn", "model": name, "lookback": 60}
-    if name not in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns"):
+    if name not in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns"):
         kwargs["related_tickers"] = ["googl", "aapl"]
     result = predict(**kwargs)
     assert isinstance(result, ForecastResponse)

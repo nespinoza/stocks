@@ -27,8 +27,7 @@ def plot_result(result, *, history_days, forecast_days, sigmas, show_related,
     start = origin - timedelta(days=int(history_days)) if history_days is not None else date.min
     end = origin + timedelta(days=int(forecast_days)) if forecast_days is not None else date.max
     training = [p for p in result.training_data if start <= date.fromisoformat(p.date) <= origin]
-    fitted = [p for p in result.fitted if start <= date.fromisoformat(p.date) <= origin]
-    future = [p for p in result.forecasts if origin < date.fromisoformat(p.date) <= end]
+    comparison = hasattr(result, 'results')
     if ax is None:
         _, ax = plt.subplots(figsize=figsize)
     dates = [date.fromisoformat(p.date) for p in training]
@@ -39,29 +38,41 @@ def plot_result(result, *, history_days, forecast_days, sigmas, show_related,
         for ticker in result.related_tickers:
             factor = result.last_close / last[ticker]
             ax.plot(dates, [p.closes[ticker] * factor for p in training],
-                    alpha=0.55, linewidth=1, label=f'{ticker} training (rebased)')
+                    alpha=0.55, linewidth=1, label=f'{ticker} training (rebased)',
+                    **({'color':'0.6', 'linestyle':':'} if comparison else {}))
 
-    def distribution(points, label, color):
+    def distribution(points, label, color, linestyle='-'):
         if not points:
             return
         x = [date.fromisoformat(p.date) for p in points]
         y = np.array([p.predicted_close for p in points])
-        ax.plot(x, y, '.-', color=color, label=label)
+        ax.plot(x, y, marker='.', linestyle=linestyle, color=color, label=label)
         for n in sorted(set(sigmas), reverse=True):
             lower = np.array([getattr(p, f'sigma_{n}').lower for p in points])
             upper = np.array([getattr(p, f'sigma_{n}').upper for p in points])
             if uncertainty == 'bands':
                 ax.fill_between(x, lower, upper, color=color, alpha=0.12,
-                                label=f'{label} {n}σ')
+                                label='_nolegend_' if comparison else f'{label} {n}σ')
             else:
                 ax.errorbar(x, y, yerr=np.vstack([y-lower, upper-y]), fmt='none',
-                            color=color, alpha=0.45, capsize=2, label=f'{label} {n}σ')
-    if show_fit:
-        distribution(fitted, 'Historical fit', 'tab:blue')
-    distribution(future, 'Forecast', 'tab:orange')
+                            color=color, alpha=0.45, capsize=2,
+                            label='_nolegend_' if comparison else f'{label} {n}σ')
+    models = result.results.items() if comparison else [(result.model, result)]
+    for i, (name, forecast) in enumerate(models):
+        fitted = [p for p in forecast.fitted if start <= date.fromisoformat(p.date) <= origin]
+        future = [p for p in forecast.forecasts if origin < date.fromisoformat(p.date) <= end]
+        color = plt.get_cmap('tab10')(i % 10)
+        if show_fit:
+            distribution(fitted, f'{name} fit' if comparison else 'Historical fit',
+                         color if comparison else 'tab:blue', '--' if comparison else '-')
+        distribution(future, f'{name} forecast' if comparison else 'Forecast',
+                     color if comparison else 'tab:orange')
     ax.axvline(origin, color='gray', linestyle='--', linewidth=1, label='Forecast origin')
-    ax.set(xlabel='Date', ylabel='Adjusted close (related tickers rebased)',
-           title=f'{result.ticker} — {result.model} — {result.horizon} {result.horizon_unit} days')
+    title_model = 'model comparison' if comparison else result.model
+    title = f'{result.ticker} — {title_model} — {result.horizon} {result.horizon_unit} days'
+    if comparison and sigmas:
+        title += '\n' + ', '.join(f'{n}σ' for n in sorted(set(sigmas))) + f' {uncertainty}'
+    ax.set(xlabel='Date', ylabel='Adjusted close (related tickers rebased)', title=title)
     ax.grid(alpha=0.2)
     ax.legend(fontsize='small', ncol=2)
     ax.figure.autofmt_xdate()
