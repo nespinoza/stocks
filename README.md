@@ -44,6 +44,105 @@ import pandas as pd
 table = pd.DataFrame([point.model_dump() for point in result.forecasts])
 ```
 
+### Select inference and sampler settings
+
+`predict()` accepts two optional keyword arguments, `inference=None` and
+`inference_setup=None`. Omitting them preserves the existing fitting and output
+behavior: GP models use their existing L-BFGS-B fits, and other models retain
+their existing estimators. `n_paths` controls predictive simulation size; it
+does **not** select posterior inference.
+
+| `inference` | Supported models | Behavior |
+| --- | --- | --- |
+| `None` | All models | Existing fitting behavior |
+| `"lbfgsb"` | All four GP models | Explicitly select the existing optimizer fit |
+| `"dynesty"` | `gp`, `multitask_gp` | Nested sampling of hyperparameters using the exact Gaussian marginal likelihood |
+| `"mcmc"` | `volatility_gp_returns`, `heteroskedastic_gp_returns` | Existing joint latent-Gaussian MCMC with slice sampling |
+
+Install the posterior inference dependencies with
+`python -m pip install '.[diagnostics]'` from the repository.
+
+```python
+# Backward-compatible optimizer call.
+result = predict("AMZN", model="gp")
+
+# Marginalize GP hyperparameters with dynesty.
+result = predict("AMZN", model="gp", inference="dynesty",
+                 inference_setup={"nlive": 150, "nested_dlogz": 0.1,
+                                  "nested_maxcall": 200000},
+                 seed=42, n_paths=2000)
+
+# Latent return GP with posterior sampling.
+result = predict("AMZN", model="heteroskedastic_gp_returns", inference="mcmc",
+                 inference_setup={"chains": 4, "warmup": 1500,
+                                  "draws": 5000, "interweave": True},
+                 seed=42, n_paths=2000)
+
+# Compare the same model with different inference methods on one snapshot.
+comparison = predict("AMZN", model=["gp", "gp"],
+                     inference=[None, "dynesty"],
+                     inference_setup=[None, {"nlive": 150}],
+                     seed=42, n_paths=2000)
+optimizer_result = comparison["gp:lbfgsb"]
+posterior_result = comparison["gp:dynesty"]
+comparison.plot(show_fit=False)
+```
+
+For a **model list**, a supplied `inference` must be a list of exactly the same
+length, even for one model. Entries may be `None`. A supplied `inference_setup`
+must likewise be an equally long list of dictionaries or `None`; omitting it
+uses defaults for every entry. Scalars/dictionaries are not broadcast over
+model lists. For a **single model string**, use a scalar inference and a single
+dictionary or `None`.
+
+Unique model names retain their existing result keys, such as `comparison["gp"]`.
+Repeated model names require an explicit inference list and use keys such as
+`gp:lbfgsb` and `gp:dynesty`. Repeated model/inference pairs (for comparing
+settings) receive suffixes in input order: `gp:dynesty`, `gp:dynesty#2`, etc.
+A `None` entry is labeled `lbfgsb` for GP models and `default` for other models.
+Each individual result still has its original `.model` name. Serialization and
+plotting preserve all comparison entries. The HTTP `/predict` endpoint accepts
+the same fields and positional alignment rules.
+
+Supported settings, with defaults:
+
+| Inference | `inference_setup` keys |
+| --- | --- |
+| `dynesty` | `nlive=150`, `nested_dlogz=0.1`, `nested_maxcall=200000`, `priors` |
+| `mcmc` | `chains=4`, `warmup=1500`, `draws=5000` (per chain), `thin=1`, `interweave=True`, `priors` |
+| `None`, `lbfgsb` | `None` or an empty dictionary; optimizer settings are unchanged |
+
+Unknown options and unsupported model/sampler combinations raise a validation
+error **before downloading prices**. `seed` and `n_paths` remain top-level
+arguments shared across comparison entries; model ordering does not change
+their seeds. `inference_setup=None` uses the defaults above. A nested `priors`
+dictionary accepts fields of `stock_api.PriorConfig`, for example
+`{"priors": {"length": [0.5, 300]}}`. Positive hyperparameters use log coordinates;
+the default length prior is log-uniform over 0.5–300 trading sessions. Existing
+model-specific amplitude priors and training-only scale adaptation are retained.
+
+Posterior inference propagates parameter and applicable latent uncertainty into
+predictive samples. Results include `.terminal_log_returns`, `.terminal_returns`,
+and `.diagnostics` with the inference method, effective sampler configuration,
+weighted hyperparameter summaries, component activity, and convergence checks.
+Unidentified length scales for inactive components should not be interpreted as
+measured. Sampling that fails convergence checks is flagged in diagnostics and
+warnings; it does not silently fall back to the optimizer.
+
+Posterior forecast medians, probabilities, and intervals come from the predictive
+mixture. The `sigma_1/2/3` bands are empirical equal-tail quantiles at the nominal
+Gaussian coverage levels, **not** an assumption that the mixture is Gaussian.
+`log_std` is the predictive log-price sample standard deviation. Posterior
+historical fit curves are currently omitted (`fitted=[]`); training data and
+forecast plotting remain available. For latent return GPs, `mean_price` and
+`price_std` are `None` because population price moments may be nonfinite.
+For the zero-mean volatility return GP, median prices and P(up) preserve the
+exact symmetry (last close and 0.5) rather than Monte Carlo fluctuations.
+Posterior probabilities describe the model distribution; they are not evidence
+of empirical calibration. Changing from the legacy optimizer to posterior
+inference also changes the prior/bound treatment, so differences are not solely
+the effect of marginalization.
+
 ### Plot the fit, training data, and forecast
 
 To compare models on the same downloaded history, pass a list:
@@ -59,8 +158,9 @@ result.plot()  # all fits and forecasts, with 1/2/3σ bands
 gp_result = result["gp"]  # an ordinary single-model ForecastResponse
 ```
 
-A string still returns `ForecastResponse`; a nonempty list of unique model
-names returns `ForecastComparison`, even when the list has only one model.
+A string still returns `ForecastResponse`; a nonempty model list returns
+`ForecastComparison`, even when the list has only one model. Repeated names
+require the explicit inference list described above.
 All models share the forecast origin, training window, and forecast dates.
 The plot draws training data once, with a distinct color per model, dashed
 historical fits, solid forecasts, and matching uncertainty. Use `sigmas=(2,)`
@@ -68,7 +168,8 @@ for a less crowded comparison, `uncertainty="errorbars"` for error bars,
 `show_fit=False` to hide fits, or `show=False` to customize/save the returned Axes.
 Single-ticker models in a comparison receive only the target's prices.
 
-`result.results` maps model names to their individual results.
+`result.results` maps model names (or disambiguated inference keys for repeated
+models) to their individual results.
 `result.model_dump_json()` saves the comparison, and
 `ForecastComparison.model_validate_json(saved_json).plot()` restores it offline
 (import `ForecastComparison` from `stock_api`). The HTTP `/predict` endpoint

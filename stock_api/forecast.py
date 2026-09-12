@@ -5,6 +5,7 @@ import numpy as np
 
 from stock_api.data import DataError, ProviderError, latest_session, future_sessions, load_prices
 from stock_api.models import MODELS
+from stock_api.inference_options import InferenceName, GAUSSIAN_GP, RETURN_GP
 from stock_api.sde import SDE_MODELS, lognormal_statistics
 from stock_api.heteroskedastic import RETURN_GP_MODELS
 from stock_api.schemas import (ForecastPoint, ForecastRequest, ForecastResponse,
@@ -25,6 +26,8 @@ def predict(
     lookback: int = 120,
     seed: int = 0,
     n_paths: int = 10_000,
+    inference: InferenceName | list[InferenceName | None] | None = None,
+    inference_setup: dict | list[dict | None] | None = None,
 ) -> ForecastResponse | ForecastComparison:
     """Download completed US-equity closes and forecast a target stock.
 
@@ -52,6 +55,14 @@ def predict(
     n_paths : int
         Monte Carlo ensemble size, 100 through 100000 (default 10000).
 
+    inference : {None, "lbfgsb", "dynesty", "mcmc"} or list
+        None preserves existing fitting. dynesty supports gp/multitask_gp;
+        mcmc supports the two return GPs. A model list requires an equally
+        long inference list when specified; None entries use existing fitting.
+    inference_setup : dict or list of dict/None, optional
+        Sampler settings for each inference (see README). For model lists,
+        provide an equally long list or omit. seed and n_paths remain top-level.
+
     Returns
     -------
     ForecastResponse or ForecastComparison
@@ -71,7 +82,7 @@ def predict(
     """
     request = ForecastRequest(ticker=ticker, related_tickers=related_tickers if related_tickers is not None else [],
                               model=model, horizon=horizon, horizon_unit=horizon_unit, lookback=lookback,
-                              seed=seed, n_paths=n_paths)
+                              seed=seed, n_paths=n_paths, inference=inference, inference_setup=inference_setup)
     try:
         return _forecast(request)
     except (DataError, ProviderError):
@@ -89,14 +100,23 @@ def _forecast(request: ForecastRequest) -> ForecastResponse | ForecastComparison
         related = request.related_tickers if any(m in ('multitask_gp','var') for m in request.model) else []
         prices = load_prices([request.ticker, *related], request.lookback, as_of)
         results = {}
-        for name in request.model:
+        methods = request.inference if request.inference is not None else [None] * len(request.model)
+        setups = request.inference_setup if request.inference_setup is not None else [None] * len(request.model)
+        for name, method, setup in zip(request.model, methods, setups):
+            label = method or ('lbfgsb' if name in GAUSSIAN_GP | RETURN_GP else 'default')
+            key = name if request.model.count(name) == 1 else f"{name}:{label}"
+            base = key
+            suffix = 2
+            while key in results:
+                key = f'{base}#{suffix}'
+                suffix += 1
             selected_related = related if name in ('multitask_gp','var') else []
             single = ForecastRequest(**{**request.model_dump(), 'model':name,
-                                        'related_tickers':selected_related})
+                                        'related_tickers':selected_related, 'inference':method, 'inference_setup':setup})
             try:
-                results[name] = _fit_forecast(single, prices[[request.ticker, *selected_related]].copy(), as_of, dates)
+                results[key] = _fit_forecast(single, prices[[request.ticker, *selected_related]].copy(), as_of, dates)
             except (ValueError, np.linalg.LinAlgError, FloatingPointError) as exc:
-                raise ForecastError(f'Model {name!r} failed in forecast comparison') from exc
+                raise ForecastError(f'Model {key!r} failed in forecast comparison') from exc
         return ForecastComparison(ticker=request.ticker, related_tickers=related,
                                   as_of=as_of.date().isoformat(), last_close=float(prices.iloc[-1,0]),
                                   horizon=request.horizon, horizon_unit=request.horizon_unit,
@@ -107,8 +127,14 @@ def _forecast(request: ForecastRequest) -> ForecastResponse | ForecastComparison
 
 
 def _fit_forecast(request, prices, as_of, dates):
+    if request.inference in ('dynesty', 'mcmc'):
+        from stock_api.posterior_forecast import posterior_forecast
+        return posterior_forecast(request, prices, as_of, dates)
     kwargs = {'seed':request.seed, 'n_paths':request.n_paths} if request.model in (SDE_MODELS | RETURN_GP_MODELS) else {}
     means, variances, diagnostics = MODELS[request.model](prices.to_numpy(), len(dates), include_fit=True, **kwargs)
+    if request.inference is not None:
+        diagnostics['inference'] = request.inference
+        diagnostics['inference_setup'] = request.inference_setup or {}
     ensemble = diagnostics.pop('_ensemble', None)
     fit_start, fit_means, fit_variances = diagnostics.pop("_fit")
     if not (np.isfinite(means).all() and np.isfinite(variances).all()):
