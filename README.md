@@ -133,8 +133,18 @@ Posterior forecast medians, probabilities, and intervals come from the predictiv
 mixture. The `sigma_1/2/3` bands are empirical equal-tail quantiles at the nominal
 Gaussian coverage levels, **not** an assumption that the mixture is Gaussian.
 `log_std` is the predictive log-price sample standard deviation. Posterior
-historical fit curves are currently omitted (`fitted=[]`); training data and
-forecast plotting remain available. For latent return GPs, `mean_price` and
+historical fit curves and uncertainty bands are stored in `fitted` for every
+model/inference combination and plotted by default (`show_fit=True`). They use
+the same posterior samples as the forecast, without another optimizer or sampler
+run. Parameter draws are selected with their posterior weights and evaluated
+individually before combining predictive medians and bands; parameters are not
+averaged before evaluation. Ordinary GPs fit log prices at every training date; return GPs fit returns
+anchored to each observed previous close, starting at the second training date.
+These bands include observation/return noise and parameter uncertainty. They
+condition on the **whole training window**, so they are descriptive in-sample
+fits, not historical out-of-sample predictions. Saved results plot offline;
+Older results saved with `fitted=[]` need a new `predict()` call to gain these
+curves. For latent return GPs, `mean_price` and
 `price_std` are `None` because population price moments may be nonfinite.
 For the zero-mean volatility return GP, median prices and P(up) preserve the
 exact symmetry (last close and 0.5) rather than Monte Carlo fluctuations.
