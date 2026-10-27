@@ -9,6 +9,7 @@ can run daily from cron going forward.
 """
 import argparse
 import json
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -25,7 +26,10 @@ def main():
     parser.add_argument('--end', required=True, help='UTC end date (exclusive), YYYY-MM-DD')
     parser.add_argument('--sources', default='gdelt,edgar')
     parser.add_argument('--tickers', default='', help='Comma-separated subset (default: all)')
-    parser.add_argument('--max-records', type=int, default=75, help='GDELT articles per ticker-week query')
+    parser.add_argument('--max-records', type=int, default=75, help='GDELT articles per ticker-window query (max 250)')
+    parser.add_argument('--window-days', type=int, default=7, help='GDELT query window length')
+    parser.add_argument('--spacing', type=float, default=sources.GDELT_SPACING, help='Seconds between GDELT requests')
+    parser.add_argument('--cooldown', type=float, default=900., help='Pause after a window exhausts its rate-limit retries')
     parser.add_argument('--store', default=str(ROOT/'data_store/news/documents.jsonl'))
     args = parser.parse_args()
     config = json.loads((ROOT/'configs/news_universe.json').read_text())
@@ -34,19 +38,27 @@ def main():
     end = datetime.fromisoformat(args.end).replace(tzinfo=timezone.utc)
     store = sources.DocumentStore(args.store)
     session = requests.Session()
-    log = (ROOT/'data_store/news/collect_log.jsonl').open('a')
+    log_path = ROOT/'data_store/news/collect_log.jsonl'
+    # Windows already fetched successfully are skipped, so a re-run only fills gaps.
+    done = {(r['query'], r['start'], r['end']) for r in map(json.loads, log_path.open()) if r.get('status') == 'ok'} \
+        if log_path.exists() else set()
+    log = log_path.open('a')
     wanted = args.sources.split(',')
     if 'gdelt' in wanted:
-        throttle = sources.Throttle(sources.GDELT_SPACING)
+        throttle = sources.Throttle(args.spacing)
         for n, ticker in enumerate(tickers, 1):
             query = sources.gdelt_query(config['stocks'][ticker]['gdelt_phrases'])
-            for a, b in sources.weekly_windows(start, end):
+            for a, b in sources.windows(start, end, args.window_days):
+                if (query, a.isoformat(), b.isoformat()) in done:
+                    continue
                 try:
                     articles = sources.fetch_gdelt(query, a, b, args.max_records, throttle, session)
                     added = store.add(sources.gdelt_documents(ticker, articles))
                     status = 'ok'
                 except Exception as error:  # Logged and skipped; a re-run fills the gap.
                     articles, added, status = [], 0, f'error: {error}'[:300]
+                    if 'rate limit' in status:
+                        time.sleep(args.cooldown)
                 log.write(json.dumps(dict(source='gdelt', ticker=ticker, query=query, start=a.isoformat(),
                                           end=b.isoformat(), returned=len(articles), added=added, status=status,
                                           at=sources.now_utc()))+'\n')

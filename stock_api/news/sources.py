@@ -163,11 +163,11 @@ def fetch_8k_body(url, session=None, throttle=None, limit=4000):
     return text[:limit]
 
 
-def weekly_windows(start, end):
+def windows(start, end, days=7):
     cursor = start
     while cursor < end:
-        yield cursor, min(cursor+timedelta(days=7), end)
-        cursor += timedelta(days=7)
+        yield cursor, min(cursor+timedelta(days=days), end)
+        cursor += timedelta(days=days)
 
 
 class DocumentStore:
