@@ -2,14 +2,12 @@
 
 A Python package that downloads daily stock prices and forecasts a target
 stock, optionally using related stocks. It also includes an optional FastAPI
-HTTP service. The original `example.py`, `utils.py`,
-and `predict_stock.py` remain standalone plotting/mean/linear-fit experiments.
-The API lives in `stock_api/` and does not import their executable demo code.
+HTTP service. The original plotting/mean/linear-fit demos live in `legacy/`;
+the API lives in `stock_api/` and does not import them.
 
 ## Install and use in Python / IPython
 
-From the repository root, install with pip (using the included `setup.py` and
-`pyproject.toml` metadata):
+From the repository root, install with pip (using the `pyproject.toml` metadata):
 
 ```bash
 python -m pip install .
@@ -292,6 +290,11 @@ and it is within PyTorch's supported Python range
 ([PyTorch installation](https://pytorch.org/get-started/locally/)).
 That leaves room for neural models and GPyTorch later. The current implementation
 uses NumPy/SciPy on CPU, without requiring a large deep-learning installation.
+The supported research environment is the Python 3.13 conda env in `.conda-env`.
+`requirements.lock.txt` pins its exact pip packages and `environment.lock.txt` its
+conda base (osx-arm64); recreate it with
+`conda create -p .conda-env --file environment.lock.txt` followed by
+`.conda-env/bin/python -m pip install -r requirements.lock.txt -e .`.
 Dependency ranges are compatibility constraints, not an exact reproducibility
 lock; export a resolved environment for reproducible experiments.
 
