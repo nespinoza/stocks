@@ -1,0 +1,1052 @@
+{
+ "description": "Large-cap US stocks for the news pipeline (step 5). Hand-assigned GICS sectors as of 2026-10; current constituents, so survivorship-biased for long backtests but adequate for 1-21 day news IC over months. Communication Services has no sector ETF in configs/etf_universe.json, so etf is null.",
+ "sector_etfs": [
+  "IYR",
+  "XLB",
+  "XLE",
+  "XLF",
+  "XLI",
+  "XLK",
+  "XLP",
+  "XLU",
+  "XLV",
+  "XLY"
+ ],
+ "stocks": {
+  "AAPL": {
+   "name": "Apple Inc.",
+   "cik": 320193,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Apple Inc",
+    "Apple shares",
+    "iPhone maker"
+   ]
+  },
+  "MSFT": {
+   "name": "MICROSOFT CORP",
+   "cik": 789019,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Microsoft"
+   ]
+  },
+  "NVDA": {
+   "name": "NVIDIA CORP",
+   "cik": 1045810,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Nvidia"
+   ]
+  },
+  "AVGO": {
+   "name": "Broadcom Inc.",
+   "cik": 1730168,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Broadcom"
+   ]
+  },
+  "ORCL": {
+   "name": "ORACLE CORP",
+   "cik": 1341439,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Oracle Corp",
+    "Oracle shares"
+   ]
+  },
+  "CRM": {
+   "name": "Salesforce, Inc.",
+   "cik": 1108524,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Salesforce"
+   ]
+  },
+  "ADBE": {
+   "name": "ADOBE INC.",
+   "cik": 796343,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Adobe"
+   ]
+  },
+  "AMD": {
+   "name": "ADVANCED MICRO DEVICES INC",
+   "cik": 2488,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Advanced Micro Devices",
+    "AMD shares",
+    "AMD stock"
+   ]
+  },
+  "CSCO": {
+   "name": "CISCO SYSTEMS, INC.",
+   "cik": 858877,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Cisco"
+   ]
+  },
+  "ACN": {
+   "name": "Accenture plc",
+   "cik": 1467373,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Accenture"
+   ]
+  },
+  "IBM": {
+   "name": "INTERNATIONAL BUSINESS MACHINES CORP",
+   "cik": 51143,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "IBM"
+   ]
+  },
+  "INTC": {
+   "name": "INTEL CORP",
+   "cik": 50863,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Intel Corp",
+    "Intel shares",
+    "Intel stock"
+   ]
+  },
+  "QCOM": {
+   "name": "QUALCOMM INC/DE",
+   "cik": 804328,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Qualcomm"
+   ]
+  },
+  "TXN": {
+   "name": "TEXAS INSTRUMENTS INC",
+   "cik": 97476,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Texas Instruments"
+   ]
+  },
+  "INTU": {
+   "name": "INTUIT INC.",
+   "cik": 896878,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Intuit"
+   ]
+  },
+  "NOW": {
+   "name": "ServiceNow, Inc.",
+   "cik": 1373715,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "ServiceNow"
+   ]
+  },
+  "AMAT": {
+   "name": "APPLIED MATERIALS INC /DE",
+   "cik": 6951,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Applied Materials"
+   ]
+  },
+  "MU": {
+   "name": "MICRON TECHNOLOGY INC",
+   "cik": 723125,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Micron"
+   ]
+  },
+  "PLTR": {
+   "name": "Palantir Technologies Inc.",
+   "cik": 1321655,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Palantir"
+   ]
+  },
+  "ANET": {
+   "name": "Arista Networks, Inc.",
+   "cik": 1596532,
+   "sector": "Information Technology",
+   "etf": "XLK",
+   "gdelt_phrases": [
+    "Arista Networks"
+   ]
+  },
+  "GOOGL": {
+   "name": "Alphabet Inc.",
+   "cik": 1652044,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "Alphabet",
+    "Google"
+   ]
+  },
+  "META": {
+   "name": "Meta Platforms, Inc.",
+   "cik": 1326801,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "Meta Platforms",
+    "Facebook parent"
+   ]
+  },
+  "NFLX": {
+   "name": "NETFLIX INC",
+   "cik": 1065280,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "Netflix"
+   ]
+  },
+  "DIS": {
+   "name": "Walt Disney Co",
+   "cik": 1744489,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "Walt Disney",
+    "Disney"
+   ]
+  },
+  "T": {
+   "name": "AT&T INC.",
+   "cik": 732717,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "AT&T"
+   ]
+  },
+  "VZ": {
+   "name": "VERIZON COMMUNICATIONS INC",
+   "cik": 732712,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "Verizon"
+   ]
+  },
+  "CMCSA": {
+   "name": "COMCAST CORP",
+   "cik": 1166691,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "Comcast"
+   ]
+  },
+  "TMUS": {
+   "name": "T-Mobile US, Inc.",
+   "cik": 1283699,
+   "sector": "Communication Services",
+   "etf": null,
+   "gdelt_phrases": [
+    "T-Mobile"
+   ]
+  },
+  "AMZN": {
+   "name": "AMAZON COM INC",
+   "cik": 1018724,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Amazon.com",
+    "Amazon shares",
+    "Amazon stock",
+    "Amazon Web Services"
+   ]
+  },
+  "TSLA": {
+   "name": "Tesla, Inc.",
+   "cik": 1318605,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Tesla"
+   ]
+  },
+  "HD": {
+   "name": "HOME DEPOT, INC.",
+   "cik": 354950,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Home Depot"
+   ]
+  },
+  "MCD": {
+   "name": "MCDONALDS CORP",
+   "cik": 63908,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "McDonald's"
+   ]
+  },
+  "NKE": {
+   "name": "NIKE, Inc.",
+   "cik": 320187,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Nike"
+   ]
+  },
+  "LOW": {
+   "name": "LOWES COMPANIES INC",
+   "cik": 60667,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Lowe's"
+   ]
+  },
+  "SBUX": {
+   "name": "STARBUCKS CORP",
+   "cik": 829224,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Starbucks"
+   ]
+  },
+  "BKNG": {
+   "name": "Booking Holdings Inc.",
+   "cik": 1075531,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Booking Holdings"
+   ]
+  },
+  "TJX": {
+   "name": "TJX COMPANIES INC /DE/",
+   "cik": 109198,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "TJX"
+   ]
+  },
+  "GM": {
+   "name": "General Motors Co",
+   "cik": 1467858,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "General Motors"
+   ]
+  },
+  "F": {
+   "name": "FORD MOTOR CO",
+   "cik": 37996,
+   "sector": "Consumer Discretionary",
+   "etf": "XLY",
+   "gdelt_phrases": [
+    "Ford Motor"
+   ]
+  },
+  "WMT": {
+   "name": "Walmart Inc.",
+   "cik": 104169,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Walmart"
+   ]
+  },
+  "PG": {
+   "name": "PROCTER & GAMBLE Co",
+   "cik": 80424,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Procter & Gamble",
+    "Procter and Gamble"
+   ]
+  },
+  "KO": {
+   "name": "COCA COLA CO",
+   "cik": 21344,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Coca-Cola"
+   ]
+  },
+  "PEP": {
+   "name": "PEPSICO INC",
+   "cik": 77476,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "PepsiCo"
+   ]
+  },
+  "COST": {
+   "name": "COSTCO WHOLESALE CORP /NEW",
+   "cik": 909832,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Costco"
+   ]
+  },
+  "PM": {
+   "name": "Philip Morris International Inc.",
+   "cik": 1413329,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Philip Morris"
+   ]
+  },
+  "MO": {
+   "name": "ALTRIA GROUP, INC.",
+   "cik": 764180,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Altria"
+   ]
+  },
+  "MDLZ": {
+   "name": "Mondelez International, Inc.",
+   "cik": 1103982,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Mondelez"
+   ]
+  },
+  "CL": {
+   "name": "COLGATE PALMOLIVE CO",
+   "cik": 21665,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Colgate-Palmolive"
+   ]
+  },
+  "TGT": {
+   "name": "TARGET CORP",
+   "cik": 27419,
+   "sector": "Consumer Staples",
+   "etf": "XLP",
+   "gdelt_phrases": [
+    "Target Corp",
+    "Target stores",
+    "Target shares"
+   ]
+  },
+  "LLY": {
+   "name": "ELI LILLY & Co",
+   "cik": 59478,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Eli Lilly"
+   ]
+  },
+  "UNH": {
+   "name": "UNITEDHEALTH GROUP INC",
+   "cik": 731766,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "UnitedHealth"
+   ]
+  },
+  "JNJ": {
+   "name": "JOHNSON & JOHNSON",
+   "cik": 200406,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Johnson & Johnson",
+    "Johnson and Johnson"
+   ]
+  },
+  "ABBV": {
+   "name": "AbbVie Inc.",
+   "cik": 1551152,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "AbbVie"
+   ]
+  },
+  "MRK": {
+   "name": "Merck & Co., Inc.",
+   "cik": 310158,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Merck"
+   ]
+  },
+  "PFE": {
+   "name": "PFIZER INC",
+   "cik": 78003,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Pfizer"
+   ]
+  },
+  "TMO": {
+   "name": "THERMO FISHER SCIENTIFIC INC.",
+   "cik": 97745,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Thermo Fisher"
+   ]
+  },
+  "ABT": {
+   "name": "ABBOTT LABORATORIES",
+   "cik": 1800,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Abbott Laboratories"
+   ]
+  },
+  "DHR": {
+   "name": "DANAHER CORP /DE/",
+   "cik": 313616,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Danaher"
+   ]
+  },
+  "AMGN": {
+   "name": "AMGEN INC",
+   "cik": 318154,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Amgen"
+   ]
+  },
+  "BMY": {
+   "name": "BRISTOL MYERS SQUIBB CO",
+   "cik": 14272,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Bristol Myers Squibb",
+    "Bristol-Myers"
+   ]
+  },
+  "GILD": {
+   "name": "GILEAD SCIENCES, INC.",
+   "cik": 882095,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Gilead Sciences"
+   ]
+  },
+  "CVS": {
+   "name": "CVS HEALTH Corp",
+   "cik": 64803,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "CVS Health"
+   ]
+  },
+  "MDT": {
+   "name": "Medtronic plc",
+   "cik": 1613103,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Medtronic"
+   ]
+  },
+  "ISRG": {
+   "name": "INTUITIVE SURGICAL INC",
+   "cik": 1035267,
+   "sector": "Health Care",
+   "etf": "XLV",
+   "gdelt_phrases": [
+    "Intuitive Surgical"
+   ]
+  },
+  "JPM": {
+   "name": "JPMORGAN CHASE & CO",
+   "cik": 19617,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "JPMorgan"
+   ]
+  },
+  "BAC": {
+   "name": "BANK OF AMERICA CORP /DE/",
+   "cik": 70858,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Bank of America"
+   ]
+  },
+  "WFC": {
+   "name": "WELLS FARGO & COMPANY/MN",
+   "cik": 72971,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Wells Fargo"
+   ]
+  },
+  "C": {
+   "name": "CITIGROUP INC",
+   "cik": 831001,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Citigroup"
+   ]
+  },
+  "GS": {
+   "name": "GOLDMAN SACHS GROUP INC",
+   "cik": 886982,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Goldman Sachs"
+   ]
+  },
+  "MS": {
+   "name": "MORGAN STANLEY",
+   "cik": 895421,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Morgan Stanley"
+   ]
+  },
+  "BLK": {
+   "name": "BlackRock, Inc.",
+   "cik": 2012383,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "BlackRock"
+   ]
+  },
+  "SCHW": {
+   "name": "SCHWAB CHARLES CORP",
+   "cik": 316709,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Charles Schwab"
+   ]
+  },
+  "AXP": {
+   "name": "AMERICAN EXPRESS CO",
+   "cik": 4962,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "American Express"
+   ]
+  },
+  "V": {
+   "name": "VISA INC.",
+   "cik": 1403161,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Visa Inc",
+    "Visa shares"
+   ]
+  },
+  "MA": {
+   "name": "Mastercard Inc",
+   "cik": 1141391,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Mastercard"
+   ]
+  },
+  "BRK-B": {
+   "name": "BERKSHIRE HATHAWAY INC",
+   "cik": 1067983,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Berkshire Hathaway"
+   ]
+  },
+  "PYPL": {
+   "name": "PayPal Holdings, Inc.",
+   "cik": 1633917,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "PayPal"
+   ]
+  },
+  "USB": {
+   "name": "US BANCORP \\DE\\",
+   "cik": 36104,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "U.S. Bancorp",
+    "US Bancorp"
+   ]
+  },
+  "MET": {
+   "name": "METLIFE INC",
+   "cik": 1099219,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "MetLife"
+   ]
+  },
+  "AIG": {
+   "name": "AMERICAN INTERNATIONAL GROUP, INC.",
+   "cik": 5272,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "American International Group",
+    "AIG"
+   ]
+  },
+  "COF": {
+   "name": "CAPITAL ONE FINANCIAL CORP",
+   "cik": 927628,
+   "sector": "Financials",
+   "etf": "XLF",
+   "gdelt_phrases": [
+    "Capital One"
+   ]
+  },
+  "GE": {
+   "name": "GENERAL ELECTRIC CO",
+   "cik": 40545,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "GE Aerospace"
+   ]
+  },
+  "CAT": {
+   "name": "CATERPILLAR INC",
+   "cik": 18230,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "Caterpillar"
+   ]
+  },
+  "HON": {
+   "name": "HONEYWELL INTERNATIONAL INC",
+   "cik": 773840,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "Honeywell"
+   ]
+  },
+  "UNP": {
+   "name": "UNION PACIFIC CORP",
+   "cik": 100885,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "Union Pacific"
+   ]
+  },
+  "UPS": {
+   "name": "UNITED PARCEL SERVICE INC",
+   "cik": 1090727,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "United Parcel Service",
+    "UPS shares"
+   ]
+  },
+  "RTX": {
+   "name": "RTX Corp",
+   "cik": 101829,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "RTX Corp",
+    "Raytheon"
+   ]
+  },
+  "BA": {
+   "name": "BOEING CO",
+   "cik": 12927,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "Boeing"
+   ]
+  },
+  "LMT": {
+   "name": "LOCKHEED MARTIN CORP",
+   "cik": 936468,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "Lockheed Martin"
+   ]
+  },
+  "DE": {
+   "name": "DEERE & CO",
+   "cik": 315189,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "Deere"
+   ]
+  },
+  "MMM": {
+   "name": "3M CO",
+   "cik": 66740,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "3M Company",
+    "3M shares"
+   ]
+  },
+  "GD": {
+   "name": "GENERAL DYNAMICS CORP",
+   "cik": 40533,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "General Dynamics"
+   ]
+  },
+  "FDX": {
+   "name": "FEDEX CORP",
+   "cik": 1048911,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "FedEx"
+   ]
+  },
+  "EMR": {
+   "name": "EMERSON ELECTRIC CO",
+   "cik": 32604,
+   "sector": "Industrials",
+   "etf": "XLI",
+   "gdelt_phrases": [
+    "Emerson Electric"
+   ]
+  },
+  "XOM": {
+   "name": "ExxonMobil Holdings Corp",
+   "cik": 2115436,
+   "sector": "Energy",
+   "etf": "XLE",
+   "gdelt_phrases": [
+    "Exxon Mobil",
+    "ExxonMobil"
+   ]
+  },
+  "CVX": {
+   "name": "CHEVRON CORP",
+   "cik": 93410,
+   "sector": "Energy",
+   "etf": "XLE",
+   "gdelt_phrases": [
+    "Chevron"
+   ]
+  },
+  "COP": {
+   "name": "CONOCOPHILLIPS",
+   "cik": 1163165,
+   "sector": "Energy",
+   "etf": "XLE",
+   "gdelt_phrases": [
+    "ConocoPhillips"
+   ]
+  },
+  "SLB": {
+   "name": "SLB LIMITED/NV",
+   "cik": 87347,
+   "sector": "Energy",
+   "etf": "XLE",
+   "gdelt_phrases": [
+    "Schlumberger",
+    "SLB shares"
+   ]
+  },
+  "EOG": {
+   "name": "EOG RESOURCES INC",
+   "cik": 821189,
+   "sector": "Energy",
+   "etf": "XLE",
+   "gdelt_phrases": [
+    "EOG Resources"
+   ]
+  },
+  "OXY": {
+   "name": "OCCIDENTAL PETROLEUM CORP /DE/",
+   "cik": 797468,
+   "sector": "Energy",
+   "etf": "XLE",
+   "gdelt_phrases": [
+    "Occidental Petroleum"
+   ]
+  },
+  "NEE": {
+   "name": "NEXTERA ENERGY INC",
+   "cik": 753308,
+   "sector": "Utilities",
+   "etf": "XLU",
+   "gdelt_phrases": [
+    "NextEra Energy"
+   ]
+  },
+  "DUK": {
+   "name": "Duke Energy CORP",
+   "cik": 1326160,
+   "sector": "Utilities",
+   "etf": "XLU",
+   "gdelt_phrases": [
+    "Duke Energy"
+   ]
+  },
+  "SO": {
+   "name": "SOUTHERN CO",
+   "cik": 92122,
+   "sector": "Utilities",
+   "etf": "XLU",
+   "gdelt_phrases": [
+    "Southern Company",
+    "Southern Co"
+   ]
+  },
+  "D": {
+   "name": "DOMINION ENERGY, INC",
+   "cik": 715957,
+   "sector": "Utilities",
+   "etf": "XLU",
+   "gdelt_phrases": [
+    "Dominion Energy"
+   ]
+  },
+  "LIN": {
+   "name": "LINDE PLC",
+   "cik": 1707925,
+   "sector": "Materials",
+   "etf": "XLB",
+   "gdelt_phrases": [
+    "Linde"
+   ]
+  },
+  "DOW": {
+   "name": "DOW INC.",
+   "cik": 1751788,
+   "sector": "Materials",
+   "etf": "XLB",
+   "gdelt_phrases": [
+    "Dow Inc"
+   ]
+  },
+  "FCX": {
+   "name": "FREEPORT-MCMORAN INC",
+   "cik": 831259,
+   "sector": "Materials",
+   "etf": "XLB",
+   "gdelt_phrases": [
+    "Freeport-McMoRan"
+   ]
+  },
+  "NEM": {
+   "name": "NEWMONT Corp /DE/",
+   "cik": 1164727,
+   "sector": "Materials",
+   "etf": "XLB",
+   "gdelt_phrases": [
+    "Newmont"
+   ]
+  },
+  "AMT": {
+   "name": "AMERICAN TOWER CORP /MA/",
+   "cik": 1053507,
+   "sector": "Real Estate",
+   "etf": "IYR",
+   "gdelt_phrases": [
+    "American Tower"
+   ]
+  },
+  "PLD": {
+   "name": "Prologis, Inc.",
+   "cik": 1045609,
+   "sector": "Real Estate",
+   "etf": "IYR",
+   "gdelt_phrases": [
+    "Prologis"
+   ]
+  },
+  "SPG": {
+   "name": "SIMON PROPERTY GROUP INC.",
+   "cik": 1063761,
+   "sector": "Real Estate",
+   "etf": "IYR",
+   "gdelt_phrases": [
+    "Simon Property"
+   ]
+  },
+  "EQIX": {
+   "name": "EQUINIX INC",
+   "cik": 1101239,
+   "sector": "Real Estate",
+   "etf": "IYR",
+   "gdelt_phrases": [
+    "Equinix"
+   ]
+  }
+ }
+}

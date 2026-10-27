@@ -1,4 +1,7 @@
-"""Download daily OHLCV + adjusted closes for configs/etf_universe.json into data_store/etf/.
+"""Download daily OHLCV + adjusted closes for a universe config into data_store/.
+
+Default: configs/etf_universe.json into data_store/etf/. For the news stocks:
+    --config configs/news_universe.json --out data_store/stocks --start 2024-01-01
 
 Writes one CSV per ticker (raw provider fields, auto_adjust=False) and a
 manifest with checksums. Existing files are kept unless --refresh is given.
@@ -20,18 +23,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--end', required=True, help='Exclusive end date, YYYY-MM-DD')
     parser.add_argument('--refresh', action='store_true')
+    parser.add_argument('--config', default='configs/etf_universe.json')
+    parser.add_argument('--out', default='data_store/etf')
+    parser.add_argument('--start', default='2007-01-01')
     args = parser.parse_args()
-    config = json.loads((ROOT/'configs/etf_universe.json').read_text())
-    tickers = [t for group in config['groups'].values() for t in group]
-    out = ROOT/'data_store/etf'
+    config = json.loads((ROOT/args.config).read_text())
+    tickers = (list(config['stocks']) if 'stocks' in config
+               else [t for group in config['groups'].values() for t in group])
+    out = ROOT/args.out
     out.mkdir(parents=True, exist_ok=True)
     manifest = {'retrieved_utc': datetime.now(timezone.utc).isoformat(), 'provider': 'Yahoo Finance via yfinance',
-                'yfinance': yf.__version__, 'start': '2007-01-01', 'end_exclusive': args.end,
+                'yfinance': yf.__version__, 'start': args.start, 'end_exclusive': args.end,
                 'auto_adjust': False, 'files': {}}
     for ticker in tickers:
         path = out/f'{ticker}.csv'
         if args.refresh or not path.exists():
-            frame = yf.Ticker(ticker).history(start='2007-01-01', end=args.end, interval='1d',
+            frame = yf.Ticker(ticker).history(start=args.start, end=args.end, interval='1d',
                                               auto_adjust=False, actions=True, timeout=30)
             if frame.empty:
                 raise RuntimeError(f'No data for {ticker}')
