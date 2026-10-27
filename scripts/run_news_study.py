@@ -73,7 +73,7 @@ def ic_table(frame, signals, outcomes, label):
 def volatility_channel(items, sessions, prices):
     logs = np.log(prices).diff()
     future = (logs**2).rolling(5).sum().shift(-6)  # close d+1 → d+6, matching the lag-1 holding
-    baseline = (logs**2).rolling(63).mean()*5
+    baseline = (logs**2).rolling(63).mean().shift(1)*5  # through d−1, so the event day's own move is excluded
     ratio = np.log(future/baseline)
     intensity = daily_panel(items, sessions, value='vol_intensity', tickers=list(prices.columns)).reindex(prices.index).fillna(0.)
     any_news = daily_panel(items.assign(one=1.), sessions, value='one', tickers=list(prices.columns)).reindex(prices.index).fillna(0.)

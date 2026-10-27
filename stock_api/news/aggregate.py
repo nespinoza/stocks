@@ -34,9 +34,10 @@ def normalize_title(title):
 
 
 def dedupe(docs):
-    """Keep the earliest copy of each (ticker, normalized title)."""
+    """Keep the earliest copy of each (ticker, normalized headline); filings are unique by doc_id."""
     frame = pd.DataFrame(docs)
-    frame['norm'] = frame.title.map(normalize_title)
+    headline = frame.source.eq('gdelt') if 'source' in frame else pd.Series(True, index=frame.index)
+    frame['norm'] = frame.title.map(normalize_title).where(headline, frame.get('doc_id'))
     frame = frame.sort_values('published_utc')
     return frame.drop_duplicates(['query_ticker', 'norm']).drop(columns='norm')
 

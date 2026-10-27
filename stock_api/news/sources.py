@@ -120,7 +120,7 @@ def fetch_8k_index(cik, session=None, throttle=None):
 
 
 def strip_html(raw, limit=4000):
-    text = re.sub(r'(?is)<(script|style).*?</\1>', ' ', raw)
+    text = re.sub(r'(?is)<(script|style|ix:header).*?</\1>', ' ', raw)  # ix:header = hidden inline-XBRL facts
     text = re.sub(r'(?s)<[^>]+>', ' ', text)
     return re.sub(r'\s+', ' ', html.unescape(text)).strip()[:limit]
 
@@ -139,12 +139,28 @@ def eight_k_document(ticker, cik, filing, body='', ingested=None):
 
 
 def fetch_8k_body(url, session=None, throttle=None, limit=4000):
+    """Text of the filing's press release (Exhibit 99.x) when present, else of the 8-K itself.
+
+    The 8-K cover is mostly boilerplate; the news is usually in Exhibit 99.1.
+    """
     throttle = throttle or Throttle(SEC_SPACING)
     session = session or requests.Session()
+    folder = url.rsplit('/', 1)[0]
     throttle.wait()
-    response = session.get(url, headers=sec_headers(), timeout=60)
+    listing = session.get(f'{folder}/index.json', headers=sec_headers(), timeout=60)
+    listing.raise_for_status()
+    names = [item['name'] for item in listing.json()['directory']['item']]
+    exhibits = [n for n in names if re.search(r'ex(hibit)?[-_]?99', n, re.I) and n.lower().endswith(('.htm', '.html', '.txt'))]
+    exhibits.sort(key=lambda n: (not re.search(r'99[-_.]?0?1(?!\d)', n), n))  # Exhibit 99.1 first
+    target = f'{folder}/{exhibits[0]}' if exhibits else url
+    throttle.wait()
+    response = session.get(target, headers=sec_headers(), timeout=60)
     response.raise_for_status()
-    return strip_html(response.text, limit)
+    text = strip_html(response.text, 50000)
+    if not exhibits:  # skip the cover-page boilerplate up to the first reported item
+        match = re.search(r'Item\s+\d\.\d\d\b', text[500:])
+        text = text[500+match.start():] if match else text
+    return text[:limit]
 
 
 def weekly_windows(start, end):
