@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field, model_validator, ConfigDict
 from stock_api.diagnostics import DiagnosticConfig
 
 MODELS = ('last_price','gp','multitask_gp','var','gbm_zero_drift',
-          'gbm_estimated_drift','ou_returns','volatility_gp_returns','heteroskedastic_gp_returns')
+          'gbm_estimated_drift','ou_returns','volatility_gp_returns','heteroskedastic_gp_returns',
+          'regression_gjr_garch')
 
 
 class HistoricalConfig(BaseModel):
@@ -19,7 +20,7 @@ class HistoricalConfig(BaseModel):
     end_date: date  # exclusive, including all forecast targets
     forecast_horizon_days: int = Field(default=7, ge=1, le=365)
     origin_frequency: Literal['weekly','monthly','daily'] = 'weekly'
-    lookbacks: list[int] = Field(default_factory=lambda:[30,60,90,180])
+    lookbacks: list[int] = Field(default_factory=lambda:[60,90,180,365])
     models: list[str] = Field(default_factory=lambda:list(MODELS))
     calendar: str = 'XNYS'
     seed: int = Field(default=20260912, ge=0)

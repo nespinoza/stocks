@@ -34,6 +34,12 @@ def test_generic_origins_and_holiday(config):
     assert len(make_origins(c))==len(set(make_origins(c)))
     c=HistoricalConfig.model_validate({**config.model_dump(),'target_ticker':' nvda ','auxiliary_tickers':['aapl']})
     assert c.target_ticker=='NVDA' and c.auxiliary_tickers==['AAPL']
+    defaults = HistoricalConfig(target_ticker='AMZN',start_date='2025-01-06',end_date='2025-02-05')
+    assert 'regression_gjr_garch' in defaults.models
+    for origin in make_origins(defaults):
+        for lookback in defaults.lookbacks:
+            train, _ = fold_dates(defaults, origin, lookback)
+            assert len(train) >= 32
 
 
 def test_checkpoint_resume_skip(config,prices,tmp_path,monkeypatch):

@@ -10,7 +10,7 @@ from stock_api.data import calendar
 
 @pytest.fixture
 def config():
-    return ValidationConfig(reference_date='2027-09-01')
+    return ValidationConfig(reference_date='2027-09-01', train_days=30)
 
 
 @pytest.fixture
@@ -226,7 +226,7 @@ def test_older_results_get_normalized_metrics(config, prices, tmp_path):
 def test_default_suite_includes_day_zero_baseline(prices):
     config = ValidationConfig(reference_date='2027-09-01', months=1)
     result = validate('AMZN', config=config, prices=prices)
-    assert set(result.model_metadata) == {'last_price','gp','multitask_gp','var','gbm_zero_drift','gbm_estimated_drift','ou_returns','volatility_gp_returns','heteroskedastic_gp_returns'}
+    assert set(result.model_metadata) == {'last_price','gp','multitask_gp','var','gbm_zero_drift','gbm_estimated_drift','ou_returns','volatility_gp_returns','heteroskedastic_gp_returns','regression_gjr_garch'}
     assert result.model_metadata['multitask_gp']['version'] == '2'
     fold = result.folds[0]
     day_zero = prices.loc[fold['train_dates'][-1], 'AMZN']

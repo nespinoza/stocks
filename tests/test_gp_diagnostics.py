@@ -86,7 +86,7 @@ def test_saved_fold_diagnostics_no_leakage_and_resume(tmp_path):
     from stock_api.diagnostics import diagnose_fold
     index=calendar().sessions_in_range('2025-01-01','2025-02-28').tz_localize(None)
     frame=prices(len(index));frame.index=index
-    run=validate('AMZN',prices=frame,models=['last_price'],config=ValidationConfig(reference_date='2025-03-01',months=1))
+    run=validate('AMZN',prices=frame,models=['last_price'],config=ValidationConfig(reference_date='2025-03-01',months=1,train_days=30))
     c=DiagnosticConfig(profile_surfaces=False,multistart=False,corner_plots=False,nlive=20,
                        nested_dlogz=1.,predictive_draws=100)
     a=diagnose_fold(run,'2025-02-01',models=['gp'],config=c,output=tmp_path/'a',progress=lambda m:None)
@@ -96,7 +96,7 @@ def test_saved_fold_diagnostics_no_leakage_and_resume(tmp_path):
     with pytest.raises(ValueError,match='different data/configuration'):
         diagnose_fold(run,'2025-02-01',models=['gp'],config=c.model_copy(update={'seed':99}),output=tmp_path/'a',resume=True)
     changed=frame.copy();changed.loc[changed.index>='2025-02-01']*=2
-    other=validate('AMZN',prices=changed,models=['last_price'],config=ValidationConfig(reference_date='2025-03-01',months=1))
+    other=validate('AMZN',prices=changed,models=['last_price'],config=ValidationConfig(reference_date='2025-03-01',months=1,train_days=30))
     b=diagnose_fold(other,'2025-02-01',models=['gp'],config=c,output=tmp_path/'b',progress=lambda m:None)
     np.testing.assert_array_equal(np.load(a/'gp/posterior.npz')['coordinates'],np.load(b/'gp/posterior.npz')['coordinates'])
     np.testing.assert_array_equal(np.load(a/'gp/predictive.npz')['paths'],np.load(b/'gp/predictive.npz')['paths'])

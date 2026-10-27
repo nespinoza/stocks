@@ -7,6 +7,12 @@ scheduled by Codex.
 
 ## Frozen first experiment
 
+New `HistoricalConfig` instances default to ten models, including
+`regression_gjr_garch`, with 60/90/180/365-calendar-day lookbacks. These windows
+provide enough history for GJR's 31-return minimum. Explicit shorter windows
+remain supported and record a GJR fit failure if insufficient. The frozen
+configuration below retains its original nine models and four windows.
+
 Configuration: [configs/historical-amzn-v1.json](configs/historical-amzn-v1.json).
 Target AMZN, auxiliaries GOOGL/AAPL, January 1, 2016 through September 1, 2026
 (exclusive), weekly origins, seven-calendar-day horizons, and the frozen

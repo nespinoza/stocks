@@ -15,3 +15,6 @@ __all__ += ["DiagnosticConfig", "PriorConfig", "diagnose_fold"]
 
 from stock_api.historical import HistoricalConfig, run_historical_validation
 __all__ += ["HistoricalConfig", "run_historical_validation"]
+
+from stock_api.garch import fit_regression_gjr, RegressionGJRFit
+__all__ += ["fit_regression_gjr", "RegressionGJRFit"]

@@ -8,7 +8,7 @@ from stock_api.inference_options import InferenceName, inference_settings
 Ticker = Annotated[str, StringConstraints(pattern=r"^[A-Z][A-Z0-9.-]{0,14}$"),
                    BeforeValidator(lambda v: v.strip().upper() if isinstance(v, str) else v)]
 ModelName = Literal["last_price", "random_walk", "gp", "multitask_gp", "var",
-                    "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns"]
+                    "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns", "regression_gjr_garch"]
 
 
 class ForecastRequest(BaseModel):
@@ -46,7 +46,7 @@ class ForecastRequest(BaseModel):
         if isinstance(self.inference, list) or isinstance(self.inference_setup, list):
             raise ValueError('A single model requires a scalar inference and a dictionary inference_setup')
         inference_settings(self.model, self.inference, self.inference_setup, seed=self.seed, n_paths=self.n_paths)
-        if self.model in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns") and self.related_tickers:
+        if self.model in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns", "regression_gjr_garch") and self.related_tickers:
             raise ValueError(f"{self.model} uses only the target; omit related_tickers")
         return self
 

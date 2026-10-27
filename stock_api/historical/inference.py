@@ -52,6 +52,10 @@ def forecast(train, steps, model, config, seed):
                                           'return_upper':float(np.quantile(terminal,(1+level)/2))} for level in LEVELS},
                     'price_moments_note':'Omitted: latent log-variance mixture may have nonfinite population price moments' if heavy else 'Monte Carlo moments',
                     'parameter_uncertainty':'GP hyperparameters and latent uncertainty marginalized'}
+        elif model == 'regression_gjr_garch':
+            from stock_api.garch import historical_prediction
+            result = historical_prediction(train, steps, seed=seed, n_paths=config.n_paths)
+            info = result.pop('diagnostics')
         else:
             kwargs={'seed':seed,'n_paths':config.n_paths} if model in SDE_MODELS else {}
             means,variances,info=MODELS[model](train.to_numpy(),steps,**kwargs)
@@ -73,7 +77,7 @@ def forecast(train, steps, model, config, seed):
                     'price_moments_note':'Analytic conditional Gaussian log-price moments'}
             info.setdefault('converged',True)
             info['method']=info.get('transition','existing_gaussian_marginals')
-        info['warnings']=list(dict.fromkeys(str(w.message) for w in caught))
+        info['warnings']=list(dict.fromkeys([*info.get('warnings', []), *(str(w.message) for w in caught)]))
     for key in ['path_median','expected_log_return','median_log_return','terminal_sigma','probability_up','terminal_samples']:
         if not np.isfinite(result[key]).all():raise ValueError(f'Nonfinite forecast: {key}')
     if np.any(np.asarray(result['path_median'])<=0):raise ValueError('Nonpositive forecast')

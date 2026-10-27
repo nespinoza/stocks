@@ -7,21 +7,26 @@ import numpy as np
 from stock_api.schemas import ForecastRequest
 from stock_api.data import latest_session, load_prices
 from stock_api.models import MODELS
+from stock_api.garch import GARCH_MODELS
 from stock_api.validation import _direction
 
 
-def evaluate(prices, lookback=120, horizon=7, folds=5):
+def evaluate(prices, lookback=120, horizon=7, folds=5, models=None):
     if len(prices) < lookback + folds * horizon:
         raise ValueError("Not enough observations for disjoint evaluation windows")
     results = {}
-    for name, model in MODELS.items():
+    names = list(models) if models is not None else list(MODELS)
+    if not names or len(set(names)) != len(names) or any(name not in MODELS for name in names):
+        raise ValueError('Choose unique registered model names')
+    for name in names:
+        model = MODELS[name]
         if name == 'random_walk':  # Legacy alias of last_price; score only once.
             continue
         errors, directions, coverage = [], [], []
         for start in range(len(prices)-folds*horizon, len(prices), horizon):
             train = prices[start-lookback:start]
             truth = prices[start:start+horizon, 0]
-            mean, variance, diagnostics = model(train, horizon)
+            mean, variance, diagnostics = model(train, horizon, **({'seed':0} if name in GARCH_MODELS else {}))
             statistics = diagnostics.get('_statistics')
             median = statistics['median_price'] if statistics is not None else np.exp(mean)
             errors.extend(np.abs(median-truth).tolist())
@@ -45,6 +50,7 @@ def main():
     parser.add_argument("--lookback", type=int, default=120)
     parser.add_argument("--horizon", type=int, default=7, help="Trading sessions per fold")
     parser.add_argument("--folds", type=int, default=5)
+    parser.add_argument("--models", nargs='+', choices=list(MODELS), help="Models to evaluate; defaults to all models")
     args = parser.parse_args()
     request = ForecastRequest(ticker=args.ticker, related_tickers=args.related,
                               lookback=args.lookback, horizon=args.horizon)
@@ -52,7 +58,7 @@ def main():
         parser.error("folds must be between 1 and 20")
     prices = load_prices([request.ticker, *request.related_tickers],
                          args.lookback + args.horizon * args.folds, latest_session())
-    print(json.dumps(evaluate(prices.to_numpy(), args.lookback, args.horizon, args.folds), indent=2))
+    print(json.dumps(evaluate(prices.to_numpy(), args.lookback, args.horizon, args.folds, args.models), indent=2))
 
 
 if __name__ == "__main__":

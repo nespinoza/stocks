@@ -20,12 +20,13 @@ from stock_api.data import calendar, latest_session, load_prices
 from stock_api.models import MODELS
 from stock_api.sde import SDE_MODELS, lognormal_statistics
 from stock_api.heteroskedastic import RETURN_GP_MODELS
+from stock_api.garch import GARCH_MODELS
 
 
 class ValidationConfig(BaseModel):
     reference_date: date
     months: int = Field(default=12, ge=1, le=120)
-    train_days: int = Field(default=30, ge=8, le=2000)
+    train_days: int = Field(default=90, ge=8, le=2000)
     horizon: int = Field(default=7, ge=1, le=365)
     train_unit: Literal['calendar', 'trading'] = 'calendar'
     horizon_unit: Literal['calendar', 'trading'] = 'calendar'
@@ -69,7 +70,7 @@ class _Builtin:
         if self.name in ('gp', 'multitask_gp'):
             kwargs = {'train_times': train.features['time'].to_numpy(),
                       'future_times': future['time'].to_numpy()}
-        if self.name in (SDE_MODELS | RETURN_GP_MODELS):
+        if self.name in (SDE_MODELS | RETURN_GP_MODELS | GARCH_MODELS):
             kwargs.update(rng=rng, n_paths=self.n_paths)
         mean, variance, diagnostics = MODELS[self.name](train.prices.to_numpy(), len(future), **kwargs)
         std = np.sqrt(variance)
@@ -80,6 +81,9 @@ class _Builtin:
             statistics = lognormal_statistics(mean, variance, float(train.prices.iloc[-1, 0]))
         else:
             predicted = statistics['median_price']
+        # Undefined population moments are omitted from this tabular interface.
+        statistics = {k:v for k,v in statistics.items()
+                      if k not in ('mean_price', 'price_std') or any(x is not None for x in v)}
         result = pd.DataFrame({'predicted_close':predicted, **statistics}, index=future.index)
         ensemble = diagnostics.pop('_ensemble', None)
         result.attrs['diagnostics'] = diagnostics
@@ -93,8 +97,9 @@ def builtin_models(*, n_paths=10_000):
     return {name: ModelSpec(lambda name=name: _Builtin(name, n_paths), version='2' if name == 'multitask_gp' else '1',
                            parameters={'implementation_sha256': _hash(inspect.getsource(MODELS[name]) +
                                        (inspect.getsource(sys.modules['stock_api.sde']) if name in SDE_MODELS else
-                                        inspect.getsource(sys.modules['stock_api.heteroskedastic']) if name in RETURN_GP_MODELS else '')),
-                                       **({'n_paths':n_paths} if name in (SDE_MODELS | RETURN_GP_MODELS) else {})})
+                                        inspect.getsource(sys.modules['stock_api.heteroskedastic']) if name in RETURN_GP_MODELS else
+                                        inspect.getsource(sys.modules['stock_api.garch']) if name in GARCH_MODELS else '')),
+                                       **({'n_paths':n_paths} if name in (SDE_MODELS | RETURN_GP_MODELS | GARCH_MODELS) else {})})
             for name in MODELS}
 
 

@@ -119,7 +119,7 @@ def test_ou_stability_and_fallback():
 def test_fold_leakage_and_diagnostics(tmp_path):
     index = calendar().sessions_in_range('2025-12-01','2026-03-31').tz_localize(None)
     prices = pd.DataFrame(training(n=len(index)),index=index,columns=['AMZN'])
-    config = ValidationConfig(reference_date='2026-04-01',months=2,seed=42)
+    config = ValidationConfig(reference_date='2026-04-01',months=2,train_days=30,seed=42)
     registry = builtin_models(n_paths=500)
     selected = {name:registry[name] for name in ['gbm_zero_drift','gbm_estimated_drift','ou_returns','last_price']}
     result = validate('AMZN',config=config,prices=prices,models=selected)
@@ -165,7 +165,7 @@ def test_active_ou_marginals_match_paths():
 def test_parameters_do_not_see_first_fold_targets():
     index = calendar().sessions_in_range('2025-12-01','2026-02-28').tz_localize(None)
     prices = pd.DataFrame(training(n=len(index)),index=index,columns=['AMZN'])
-    config = ValidationConfig(reference_date='2026-03-01',months=1)
+    config = ValidationConfig(reference_date='2026-03-01',months=1,train_days=30)
     models = {name:spec for name,spec in builtin_models(n_paths=100).items() if name.startswith('gbm_') or name=='ou_returns'}
     base = validate('AMZN',config=config,prices=prices,models=models)
     changed = prices.copy()

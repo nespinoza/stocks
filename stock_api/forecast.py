@@ -8,6 +8,7 @@ from stock_api.models import MODELS
 from stock_api.inference_options import InferenceName, GAUSSIAN_GP, RETURN_GP
 from stock_api.sde import SDE_MODELS, lognormal_statistics
 from stock_api.heteroskedastic import RETURN_GP_MODELS
+from stock_api.garch import GARCH_MODELS
 from stock_api.schemas import (ForecastPoint, ForecastRequest, ForecastResponse,
                                FitPoint, SigmaInterval, TrainingPoint, ModelName, ForecastComparison)
 
@@ -40,7 +41,7 @@ def predict(
     model : str or list of str
         gp, multitask_gp, var, last_price (alias random_walk), gbm_zero_drift,
         gbm_estimated_drift, ou_returns, volatility_gp_returns, or
-        heteroskedastic_gp_returns. Only multitask_gp and var accept
+        heteroskedastic_gp_returns, or regression_gjr_garch. Only multitask_gp and var accept
         related tickers for direct forecasting.
         A list returns a ForecastComparison fitted to one shared price download.
         Single-ticker models in a comparison use only the target column.
@@ -130,7 +131,7 @@ def _fit_forecast(request, prices, as_of, dates):
     if request.inference in ('dynesty', 'mcmc'):
         from stock_api.posterior_forecast import posterior_forecast
         return posterior_forecast(request, prices, as_of, dates)
-    kwargs = {'seed':request.seed, 'n_paths':request.n_paths} if request.model in (SDE_MODELS | RETURN_GP_MODELS) else {}
+    kwargs = {'seed':request.seed, 'n_paths':request.n_paths} if request.model in (SDE_MODELS | RETURN_GP_MODELS | GARCH_MODELS) else {}
     means, variances, diagnostics = MODELS[request.model](prices.to_numpy(), len(dates), include_fit=True, **kwargs)
     if request.inference is not None:
         diagnostics['inference'] = request.inference
@@ -159,8 +160,8 @@ def _fit_forecast(request, prices, as_of, dates):
                             **_uncertainty(means[i], variances[i], statistics, i),
                             lower_95=float(lower[i]), upper_95=float(upper[i]),
                             predicted_change_pct=float(changes[i]), probability_up=float(probabilities[i]),
-                            mean_price=float(statistics['mean_price'][i]), median_price=float(medians[i]),
-                            price_std=float(statistics['price_std'][i]))
+                            mean_price=None if statistics['mean_price'][i] is None else float(statistics['mean_price'][i]), median_price=float(medians[i]),
+                            price_std=None if statistics['price_std'][i] is None else float(statistics['price_std'][i]))
               for i, date in enumerate(dates)]
     warnings = ["Experimental forecasts; accuracy and interval calibration have not been established.",
                 "Adjusted closes, completed US market sessions, and XNYS calendar only."]
@@ -168,6 +169,7 @@ def _fit_forecast(request, prices, as_of, dates):
         warnings.append("GP optimizer reached its limit; inspect the fit before relying on it.")
     if diagnostics.get('fallback'):
         warnings.append('OU fallback to IID Gaussian log returns: '+diagnostics['fallback'])
+    warnings.extend(diagnostics.get('warnings', []))
     change = float(changes[-1])
     return ForecastResponse(ticker=request.ticker, related_tickers=request.related_tickers,
                             model=request.model, as_of=as_of.date().isoformat(), last_close=last,

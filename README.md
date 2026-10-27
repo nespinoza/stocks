@@ -324,7 +324,7 @@ Use `"model":"var"` with the same related tickers for autoregression. Use
 |---|---|---|
 | `ticker` | required | US-equity Yahoo symbol; normalized to uppercase |
 | `related_tickers` | `[]` | Up to 3 auxiliary stocks; duplicates/target removed |
-| `model` | `multitask_gp` | `gp`, `multitask_gp`, `var`, `last_price` (alias: `random_walk`), `gbm_zero_drift`, `gbm_estimated_drift`, `ou_returns`, `volatility_gp_returns`, `heteroskedastic_gp_returns` |
+| `model` | `multitask_gp` | `gp`, `multitask_gp`, `var`, `last_price` (alias: `random_walk`), `gbm_zero_drift`, `gbm_estimated_drift`, `ou_returns`, `volatility_gp_returns`, `heteroskedastic_gp_returns`, `regression_gjr_garch` |
 | `horizon` | `7` | 1–30 calendar days or trading sessions |
 | `horizon_unit` | `calendar` | `calendar` or `trading` |
 | `lookback` | `120` | 60–252 completed market sessions |
@@ -340,7 +340,8 @@ The response includes:
 Prices are **adjusted closing prices**, using explicit `auto_adjust=True`
 ([yfinance download reference](https://ranaroussi.github.io/yfinance/reference/api/yfinance.download.html)).
 `predicted_close` is the predictive median, not its arithmetic mean. Most models
-use lognormal marginals; the latent return GPs use variance-mixture distributions.
+use lognormal marginals; the latent return GPs use variance-mixture distributions,
+and GJR uses recursively simulated Student-t innovations.
 Intervals are pointwise 95% model prediction intervals; `probability_up` is a
 model-derived probability, not an empirically calibrated success rate.
 
@@ -369,6 +370,14 @@ and each request downloads and refits.
 | 500 | Numerical model fit failed |
 
 ## Models
+
+**Regression–GJR-GARCH:** `regression_gjr_garch` combines an AR(1) return
+regression with asymmetric GJR-GARCH variance and Student-t innovations.
+It is included in the standard installation and default evaluation suites. Use
+`predict("AMZN", model="regression_gjr_garch", lookback=252, seed=42)`.
+The lower-level API supports explicitly aligned external regressors and future
+scenarios. See [model and regressor usage](GARCH.md) and the
+[September 2025–August 2026 Amazon comparison](reports/GJR_AMZN_COMPARISON.md).
 
 **Return-space latent GPs:** `volatility_gp_returns` fixes expected log return
 to zero and infers time-varying volatility. `heteroskedastic_gp_returns` jointly
@@ -437,7 +446,7 @@ from stock_api import ValidationConfig, validate
 
 run = validate("AMZN", related_tickers=["GOOGL", "AAPL"],
                config=ValidationConfig(reference_date="2026-09-01",
-                                       months=12, train_days=30, horizon=7))
+                                       months=12, train_days=90, horizon=7))
 print(run.summary())
 run.plot()
 run.save("validation_runs/amazon.json")
@@ -456,7 +465,7 @@ Tests use deterministic synthetic prices and a mocked provider; no internet is
 needed. They check API validation/errors, holidays and completed-session logic,
 GP cross-ticker influence, constant series, and chronological evaluation windows.
 
-The evaluation command needs internet and compares all nine models on successive,
+The evaluation command needs internet and compares the ten default models on successive,
 disjoint held-out windows. It refits on only the preceding `lookback` sessions and
 reports price MAE, final-session direction accuracy, and observed 95% interval
 coverage. Its horizon is always **trading sessions**. Five folds are only a smoke

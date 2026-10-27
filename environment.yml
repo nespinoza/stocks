@@ -5,4 +5,5 @@ dependencies:
   - python=3.13
   - pip
   - pip:
+      - arch>=8,<9
       - -e .[dev,plots,http,diagnostics,historical]

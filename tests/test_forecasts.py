@@ -41,6 +41,10 @@ def test_gp_uses_related_tickers(prices):
 
 @pytest.mark.parametrize("name", MODELS)
 def test_constant_series(name):
+    if name == 'regression_gjr_garch':
+        with pytest.raises(ValueError, match='nondegenerate'):
+            MODELS[name](np.ones((60, 2))*100, 7)
+        return
     mean, variance, _ = MODELS[name](np.ones((60, 2)) * 100, 7)
     np.testing.assert_allclose(np.exp(mean), 100, atol=1e-5)
     assert np.isfinite(variance).all()
@@ -66,7 +70,7 @@ def client(monkeypatch, prices):
 @pytest.mark.parametrize("name", MODELS)
 def test_api(client, name):
     payload = {"ticker":"amzn", "model":name, "lookback":60}
-    if name not in ("last_price", "random_walk", "gp", "gbm_zero_drift", "gbm_estimated_drift", "ou_returns", "volatility_gp_returns", "heteroskedastic_gp_returns"):
+    if name in ("multitask_gp", "var"):
         payload["related_tickers"] = ["googl", "aapl"]
     response = client.post("/predict", json=payload)
     assert response.status_code == 200, response.text
@@ -124,6 +128,7 @@ def test_walk_forward_has_no_future_leakage(monkeypatch, prices):
     np.testing.assert_equal(windows[0], prices[26:86])
     np.testing.assert_equal(windows[1], prices[33:93])
     assert result["spy"]["folds"] == 2
+    assert result['regression_gjr_garch']['folds'] == 2
 
 
 def test_gp_matches_full_joint_conditioning(prices):

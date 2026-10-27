@@ -155,3 +155,6 @@ MODELS.update(SDE_MODELS)
 
 from stock_api.heteroskedastic import RETURN_GP_MODELS
 MODELS.update(RETURN_GP_MODELS)
+
+from stock_api.garch import GARCH_MODELS
+MODELS.update(GARCH_MODELS)

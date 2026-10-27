@@ -26,7 +26,7 @@ run = validate(
     "AMZN",
     related_tickers=["GOOGL", "AAPL"],
     config=config,
-    models=["last_price", "gp", "multitask_gp", "var"],  # omit to run all built-ins
+    models=["last_price", "gp", "multitask_gp", "var"],
 )
 print(run.summary())
 run.plot()  # normalized MAE (% of each fold's average observed price)
@@ -36,6 +36,13 @@ run.save("validation_runs/amazon-v1.json")
 The examples use the historical cutoff `2026-09-01`. The downloader rejects
 experiments requiring future observations. For offline experiments,
 pass your own `prices` DataFrame. There is no download if prices are supplied.
+
+Omitting `models` runs all ten built-ins, including `regression_gjr_garch`.
+`ValidationConfig` defaults to 90 calendar days of training. The example above
+explicitly selects a 30-day window and a subset of models; use at least 60 days
+(90 is the default) when including GJR, which requires 31 returns. Too-short
+windows fail explicitly. `arch` is installed with the base package and the
+repository's conda environment.
 
 The evaluation year is `[reference_date - 12 months, reference_date)`. Each
 monthly forecast origin is the first calendar day of that month. For the

@@ -67,10 +67,13 @@ def experiment_lock(root):
 
 def implementation():
     package=Path(__file__).resolve().parents[1]
-    paths=[package/'models.py',package/'sde.py',package/'heteroskedastic.py',
+    paths=[package/'models.py',package/'sde.py',package/'heteroskedastic.py',package/'garch.py',
            *sorted((package/'diagnostics').glob('*.py')),
            *[package/'historical'/name for name in ['config.py','runner.py','inference.py']]]
     versions={p:importlib.metadata.version(p) for p in ['numpy','scipy','pandas','pydantic','dynesty','exchange-calendars','yfinance','threadpoolctl']}
+    for optional in ['arch', 'statsmodels']:
+        try: versions[optional] = importlib.metadata.version(optional)
+        except importlib.metadata.PackageNotFoundError: versions[optional] = None
     try:commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=package,text=True,stderr=subprocess.DEVNULL).strip()
     except (subprocess.CalledProcessError,FileNotFoundError):commit=None
     return {'version':VERSION,'git_commit':commit,'python':platform.python_version(),'packages':versions,

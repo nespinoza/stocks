@@ -108,7 +108,7 @@ def test_fold_leakage_and_saved_diagnostics(tmp_path):
     index = calendar().sessions_in_range('2025-12-01', '2026-03-31').tz_localize(None)
     values = prices_from_returns(np.random.default_rng(12).normal(0, .02, len(index)-1))
     prices = pd.DataFrame(values, index=index, columns=['AMZN'])
-    config = ValidationConfig(reference_date='2026-04-01', months=2, seed=42)
+    config = ValidationConfig(reference_date='2026-04-01', months=2, train_days=30, seed=42)
     registry = builtin_models(n_paths=200)
     models = {name: registry[name] for name in RETURN_GP_MODELS}
     result = validate('AMZN', config=config, prices=prices, models=models)
