@@ -511,8 +511,10 @@ see [reports/evaluation-rescore-2026-10-27/REPORT.md](reports/evaluation-rescore
 | Module | Contents |
 |---|---|
 | `stock_api.risk` | Garman–Klass variance, log-HAR-RV forecasts, EWMA, rolling variance, Ledoit–Wolf covariance and correlation, PCA factor covariance |
-| `stock_api.allocation` | inverse volatility, equal-risk-contribution (risk parity), capped minimum variance |
-| `stock_api.engine` | the shared walk-forward engine: decide at a close, execute at the next close, proportional costs, drifting holdings; `performance()` summaries |
+| `stock_api.allocation` | inverse volatility, equal-risk-contribution (risk parity), capped minimum variance, cost-aware long-only mean–variance (L1 turnover penalty) |
+| `stock_api.views` | Black–Litterman posterior, reverse optimization (implied returns), Grinold signal-to-alpha mapping, He–Litterman view uncertainty |
+| `stock_api.costs` | half-spread plus square-root market-impact cost model |
+| `stock_api.engine` | the shared walk-forward engine: decide at a close, execute at the next close, drifting holdings, policy callbacks that see current holdings, no-trade bands, flat or pluggable costs; `performance()` summaries |
 
 The ETF research universe (41 liquid ETFs across equities, sectors, countries,
 bonds and commodities, all trading since April 2007) is defined in
@@ -521,3 +523,6 @@ bonds and commodities, all trading since April 2007) is defined in
 into git-ignored `data_store/etf/`, then run
 `OPENBLAS_NUM_THREADS=1 .conda-env/bin/python scripts/run_etf_risk_study.py`.
 See [reports/etf-risk-study-2026-10-27/REPORT.md](reports/etf-risk-study-2026-10-27/REPORT.md).
+Then `scripts/run_etf_bl_study.py` tests Black–Litterman momentum views on the
+risk-parity base; see
+[reports/etf-black-litterman-2026-10-27/REPORT.md](reports/etf-black-litterman-2026-10-27/REPORT.md).

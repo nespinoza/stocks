@@ -38,7 +38,7 @@ def load_panel():
     fields = {}
     for ticker in tickers:
         frame = pd.read_csv(ROOT/'data_store/etf'/f'{ticker}.csv', parse_dates=['Date'], index_col='Date')
-        for field in ('Open', 'High', 'Low', 'Close', 'Adj Close'):
+        for field in ('Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume'):
             fields.setdefault(field, {})[ticker] = frame[field]
     panel = {k: pd.DataFrame(v).loc[config['start']:] for k, v in fields.items()}
     missing = int(panel['Adj Close'].isna().sum().sum())

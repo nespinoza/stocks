@@ -44,3 +44,38 @@ def minimum_variance(covariance, cap=1.):
         raise ValueError(f'Minimum variance failed: {result.message}')
     weights = np.clip(result.x, 0, cap)
     return weights/weights.sum()
+
+
+def mean_variance(mean, covariance, risk_aversion, current=None, cost=0., cap=1.):
+    """Long-only, fully invested max of μᵀw − δ/2 wᵀΣw − cost·‖w − current‖₁.
+
+    The L1 term charges proportional trading costs against the current
+    (drifted) holdings, which creates a no-trade region around them. It is
+    solved exactly by splitting the trade into buys u and sells v.
+    """
+    mean, covariance = np.asarray(mean, float), np.asarray(covariance, float)
+    n = len(mean)
+    if cap*n < 1:
+        raise ValueError('Cap too small for a fully invested portfolio')
+    current = np.full(n, 1/n) if current is None or np.sum(current) <= 0 else np.asarray(current, float)
+    current = current/current.sum()
+    weights = lambda x: current+x[:n]-x[n:]
+
+    def objective(x):
+        w = weights(x)
+        return -(mean@w-.5*risk_aversion*w@covariance@w-cost*x.sum())
+
+    def gradient(x):
+        g = mean-risk_aversion*covariance@weights(x)
+        return -np.r_[g-cost, -g-cost]
+
+    split = np.hstack([np.eye(n), -np.eye(n)])
+    constraints = [{'type': 'eq', 'fun': lambda x: x[:n].sum()-x[n:].sum(), 'jac': lambda x: np.r_[np.ones(n), -np.ones(n)]},
+                   {'type': 'ineq', 'fun': lambda x: weights(x), 'jac': lambda x: split},
+                   {'type': 'ineq', 'fun': lambda x: cap-weights(x), 'jac': lambda x: -split}]
+    result = minimize(objective, np.zeros(2*n), jac=gradient, method='SLSQP', bounds=[(0, None)]*(2*n),
+                      constraints=constraints, options={'ftol': 1e-15, 'maxiter': 2000})
+    if not result.success:
+        raise ValueError(f'Mean-variance failed: {result.message}')
+    w = np.clip(weights(result.x), 0, cap)
+    return w/w.sum()

@@ -14,44 +14,60 @@ def month_end_dates(index):
     return pd.DatetimeIndex(pd.Series(index, index=index).groupby(index.to_period('M')).max().to_numpy())
 
 
-def run_backtest(returns, decisions, cost_bps=5., lag=1):
+def run_backtest(returns, decisions, cost_bps=5., lag=1, band=0., cost_model=None, decision_dates=None):
     """Simulate daily net returns.
 
     returns: DataFrame of daily simple returns (dates × assets).
-    decisions: dict {decision date: weight Series/array over returns.columns}.
+    decisions: dict {decision date: weight Series/array over returns.columns}, or a
+        policy callable policy(date, held) -> weights, called at each of
+        `decision_dates` with the drifted holdings at that close (a Series).
+    band: per-asset no-trade band; trades smaller than it are skipped and the
+        remaining weights renormalized (not applied to the first purchase).
+    cost_model: optional callable cost_model(date, trade) -> cost as a fraction
+        of wealth, where trade is the signed weight change; replaces cost_bps.
     Returns (daily DataFrame with gross/net/turnover/cost, executed weights DataFrame).
     """
     returns = returns.fillna(0.)
-    dates = returns.index
-    position = {dates.get_loc(date): date for date in decisions}
-    executions = {}
-    for location, date in position.items():
-        weights = decisions[date]
-        weights = (weights.reindex(returns.columns).fillna(0.) if isinstance(weights, pd.Series)
-                   else pd.Series(weights, index=returns.columns)).to_numpy(float)
+    dates, columns = returns.index, returns.columns
+    if callable(decisions):
+        if decision_dates is None:
+            raise ValueError('A policy needs decision_dates')
+        policy, schedule = decisions, list(decision_dates)
+    else:
+        policy, schedule = (lambda date, held: decisions[date]), list(decisions)
+    decide_at = {dates.get_loc(date): date for date in schedule}
+
+    def validate(weights, date):
+        weights = (weights.reindex(columns).fillna(0.) if isinstance(weights, pd.Series)
+                   else pd.Series(weights, index=columns)).to_numpy(float)
         if abs(weights.sum()-1) > 1e-6 or weights.min() < -1e-9:
             raise ValueError(f'Weights at {date.date()} must be long-only and sum to one')
-        if location+lag < len(dates):
-            executions[location+lag] = weights
+        return weights
+
     held = np.zeros(returns.shape[1])
-    invested = False
-    rows, executed = [], {}
+    pending, rows, executed = {}, [], {}
     values = returns.to_numpy()
     for t in range(len(dates)):
-        gross = float(held@values[t]) if invested else 0.
-        if invested:
+        gross = float(held@values[t])
+        if held.any():
             held = held*(1+values[t])/(1+gross)
         cost = turnover = 0.
-        if t in executions:
-            target = executions[t]
-            turnover = float(np.abs(target-held).sum()) if invested else 1.
-            cost = cost_bps/1e4*turnover
-            held, invested = target.copy(), True
+        if t in decide_at and t+lag < len(dates):
+            pending[t+lag] = validate(policy(dates[t], pd.Series(held, index=columns)), dates[t])
+        if t in pending:
+            target = pending.pop(t)
+            if band > 0 and held.any():
+                target = np.where(np.abs(target-held) > band, target, held)
+                target = target/target.sum()
+            trade = target-held
+            turnover = float(np.abs(trade).sum())
+            cost = cost_model(dates[t], trade) if cost_model else cost_bps/1e4*turnover
+            held = target.copy()
             executed[dates[t]] = target
         rows.append((gross, (1+gross)*(1-cost)-1, turnover, cost))
     daily = pd.DataFrame(rows, index=dates, columns=['gross', 'net', 'turnover', 'cost'])
-    first = min(executions) if executions else len(dates)
-    return daily.iloc[first:], pd.DataFrame(executed, index=returns.columns).T
+    first = dates.get_loc(min(executed)) if executed else len(dates)
+    return daily.iloc[first:], pd.DataFrame(executed, index=columns).T
 
 
 def performance(net, periods_per_year=252):

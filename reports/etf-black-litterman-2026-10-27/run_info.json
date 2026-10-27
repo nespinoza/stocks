@@ -1,0 +1,33 @@
+{
+  "cost_bps": 5.0,
+  "prior_sharpe_monthly": 0.14433756729740646,
+  "tau": 0.05,
+  "view_confidence": 0.5,
+  "ics": [
+    0.05,
+    0.1
+  ],
+  "aums": [
+    10000000.0,
+    1000000000.0
+  ],
+  "origins": [
+    "2009-12-31",
+    "2026-09-30",
+    202
+  ],
+  "tilt_trials": 12,
+  "best_tilt": "BL mom_12_1, IC 0.10, cost-penalized",
+  "deflated_sharpe": {
+    "dsr": 0.7475483078216603,
+    "sharpe": 0.032151504412418284,
+    "threshold_sharpe": 0.02176655530405344,
+    "n_trials": 12,
+    "n": 4229
+  },
+  "pbo": {
+    "pbo": 0.22548562548562548,
+    "splits": 12870,
+    "median_logit": 1.2039728043259361
+  }
+}
