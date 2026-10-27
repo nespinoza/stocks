@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "as_of": "2026-10-16",
+  "completed_month": "2026-09-30",
+  "universe": "IWB issuer holdings, 2026-10-15; USD equities",
+  "price_floor_exclusive": 10,
+  "median_daily_dollar_volume_floor": 10000000,
+  "liquidity_sessions": 63,
+  "training_months": 60,
+  "ridge_penalty": 60.0,
+  "features": [
+    "last_month_log_return",
+    "last_3_month_log_return",
+    "prior_2_to_12_month_log_return",
+    "last_month_log_realized_variance"
+  ],
+  "selection_start": "2017-01-31",
+  "selection_end": "2023-12-31",
+  "audit_start": "2024-01-31",
+  "audit_end": "2026-09-30",
+  "rank": "minimum Brier skill vs rolling up-frequency across 2017-2020 and 2021-2023; full selection skill breaks ties",
+  "number_selected": 100,
+  "bootstrap_blocks_months": 6,
+  "bootstrap_replicates": 4000,
+  "seed": 20261018,
+  "share_classes": "one per normalized issuer name, highest recent dollar volume"
+}

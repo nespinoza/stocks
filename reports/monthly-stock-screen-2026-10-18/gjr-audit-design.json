@@ -1,0 +1,12 @@
+{
+  "model": "regression_gjr_garch",
+  "lookback_calendar_days": 365,
+  "n_paths": 2000,
+  "evaluation_months": [
+    "2024-01",
+    "2026-09"
+  ],
+  "seed": 20261018,
+  "shortlist_sha256": "e1d93580c054fec5c66523c7b13d2990f11a2bb3ff203f92efce3f1a2c634a97",
+  "model_sha256": "a043ca069524dbd27531049986d096b8f432544a86e2050751ad230df7e1042a"
+}

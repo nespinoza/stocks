@@ -1,0 +1,37 @@
+{
+  "created_utc": "2026-10-18T21:37:33.359868+00:00",
+  "issuer_equities": 1023,
+  "eligible_issuers": 686,
+  "excluded": 337,
+  "selected": 100,
+  "minimum_selected_price": 14.470000267028809,
+  "positive_selection_both_blocks": 59,
+  "positive_audit_skill": 33,
+  "positive_selection_and_audit": 22,
+  "holm_confirmed_selected": 0,
+  "selected_pooled_audit": {
+    "months": 3300,
+    "brier": 0.25587576588726113,
+    "baseline_brier": 0.2508924573518746,
+    "brier_skill_pct": -1.986232901532592,
+    "accuracy_pct": 51.696969696969695,
+    "baseline_accuracy_pct": 53.121212121212125,
+    "return_r2_pct": -3.3850615243419258,
+    "volatility_skill_pct": 6.4138103718026755,
+    "monthly_volatility_pct": 9.015078503635683
+  },
+  "sector_counts": {
+    "Financials": 20,
+    "Industrials": 18,
+    "Health Care": 15,
+    "Utilities": 12,
+    "Consumer Discretionary": 9,
+    "Information Technology": 9,
+    "Consumer Staples": 7,
+    "Real Estate": 5,
+    "Materials": 3,
+    "Energy": 2
+  },
+  "mean_pairwise_monthly_correlation": 0.20481098960217356,
+  "script_sha256": "6e1ae7e3eab2e5f909016a25b8089d31cd4774abd5d9a894bc676fa74931721e"
+}

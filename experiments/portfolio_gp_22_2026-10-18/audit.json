@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "strategies": 24,
+  "months_per_strategy": 6,
+  "gp_fits": 528,
+  "stock_month_forecasts": 528,
+  "predictive_joint_distributions": 24,
+  "daily_validation_sessions": 127,
+  "minimum_predictive_covariance_eigenvalue": 0.0010177706372130418,
+  "maximum_budget_error_dollars": 3.637978807091713e-12,
+  "maximum_reconstructed_daily_equity_error_dollars": 1.5006662579253316e-11,
+  "maximum_mc_standard_deviation_correction": 0.03504764048040809,
+  "checks": [
+    "22 unique tickers",
+    "training cutoffs",
+    "portfolio constraints",
+    "drifted pretrade weights",
+    "buys and sells",
+    "fee equation",
+    "self-financing dollar budget",
+    "daily equity reconstruction",
+    "monthly compounding",
+    "covariance PSD",
+    "Monte Carlo moments"
+  ]
+}

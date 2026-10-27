@@ -1,0 +1,8 @@
+{
+  "command": "MPLCONFIGDIR=/tmp/stocks-matplotlib-audit OPENBLAS_NUM_THREADS=1 .conda-env/bin/python -m pytest tests/test_portfolio.py tests/test_return_gp.py -q",
+  "passed": 16,
+  "failed": 0,
+  "warnings": 18,
+  "warning_category": "Existing NumPy timedelta deprecations in calendar and validation code",
+  "audit_status": "PASS; independently reconstructed all 24 strategies"
+}

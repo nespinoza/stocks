@@ -1,0 +1,22 @@
+[
+  {
+    "lookback_days": 30,
+    "experiment_id": "fc89d52e152a9af079508687ca2646210f9547bd66bb08f303939bcd9a245298",
+    "original_metrics_exactly_equal": true
+  },
+  {
+    "lookback_days": 60,
+    "experiment_id": "f2bbf7edff9f329c66230270dea7b96ea811610d2524cd1805bcea619c98b75b",
+    "original_metrics_exactly_equal": true
+  },
+  {
+    "lookback_days": 90,
+    "experiment_id": "0fa9d5e282abe2f1c51abfe512e1234953af300cae97d78a53023d2362a04c56",
+    "original_metrics_exactly_equal": true
+  },
+  {
+    "lookback_days": 180,
+    "experiment_id": "e2da169f66a7a1ddac9217b16b9526bcd27bae00627b06ed0bce7b1ad9c8c966",
+    "original_metrics_exactly_equal": true
+  }
+]

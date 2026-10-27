@@ -1,0 +1,23 @@
+{
+  "python": "3.13.15",
+  "packages": {
+    "numpy": "2.5.3",
+    "pandas": "2.3.3",
+    "scipy": "1.18.1",
+    "yfinance": "0.2.66",
+    "arch": "8.0.0",
+    "matplotlib": "3.11.1"
+  },
+  "sha256": {
+    "reports/monthly-stock-screen-2026-10-18/screen-design.json": "7cbfbe802067748309deaf5b8ece0bdff6caa316dd1520fbd6831c989067c59e",
+    "reports/monthly-stock-screen-2026-10-18/data/iwb-holdings.csv": "e0d8c03bfc61be0a231a555dba8cf1adfe571e965f0a0f53e412a6928b379750",
+    "reports/monthly-stock-screen-2026-10-18/data/universe.csv": "49885314bedb5500e676d4e96e4c2dd2e5f7993e380f6106dc131999be311d39",
+    "reports/monthly-stock-screen-2026-10-18/top-100.csv": "e1d93580c054fec5c66523c7b13d2990f11a2bb3ff203f92efce3f1a2c634a97",
+    "reports/monthly-stock-screen-2026-10-18/monthly-predictions.csv": "9465c6a67112d2ab0bf950170f737a42d0fb36013364d015a6ff1d559f777b9e",
+    "reports/monthly-stock-screen-2026-10-18/gjr-monthly-scores.csv": "7c061c2db5391854bac6ef095f00f1f2b759c96aefc9cbb43854d0e35b82841c",
+    "scripts/download_monthly_screen.py": "1e628468436e30a84181c3db9ed44da7070340282f079d6344eb2525423a5427",
+    "scripts/screen_monthly_stocks.py": "6e1ae7e3eab2e5f909016a25b8089d31cd4774abd5d9a894bc676fa74931721e",
+    "scripts/audit_monthly_gjr.py": "8bbf1f959b71a31cced726a1849752f2065feefc0e45f4804b8388b80d6cc337",
+    "scripts/report_monthly_screen.py": "62fb90574f26063fc39c7a619723e09305399399543f8fd5384af593401aa6c4"
+  }
+}

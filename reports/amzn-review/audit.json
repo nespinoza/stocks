@@ -1,0 +1,43 @@
+{
+  "experiment": "historical_validation/AMZN/2016-2026-v1",
+  "experiment_id": "97215a8ca60e7054042a2ca627501a9785f97c49129e7a353fe961671221a526",
+  "snapshot_sha256": "5614a065f05adaed7df18faf74f1a1ade732fa8d79bf7b75849c8e290c5f8511",
+  "snapshot_rows": 2815,
+  "snapshot_start": "2015-06-22",
+  "snapshot_end": "2026-08-31",
+  "verified_records": 20016,
+  "status_counts": {
+    "ok": 19145,
+    "inference_failed": 871
+  },
+  "record_checksums_dates_seeds_training_and_realizations_verified": true,
+  "saved_scores_and_96_planned_comparisons_reproduced": true,
+  "changed_inference_sources": [],
+  "changed_report_sources": [],
+  "training_sessions": {
+    "30": {
+      "min": 17,
+      "max": 20,
+      "median": 19.0
+    },
+    "60": {
+      "min": 37,
+      "max": 42,
+      "median": 41.0
+    },
+    "90": {
+      "min": 58,
+      "max": 63,
+      "median": 62.0
+    },
+    "180": {
+      "min": 120,
+      "max": 126,
+      "median": 123.0
+    }
+  },
+  "significant_improvements_holm_05": 0,
+  "significant_deteriorations_holm_05": 38,
+  "summed_unit_runtime_hours": 241.69566737713046,
+  "scope": "Offline consistency audit; no independent re-download or model refit. WIS/common panels/failure replacement are post-hoc descriptive analyses."
+}

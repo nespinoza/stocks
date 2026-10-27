@@ -1,0 +1,16 @@
+{
+  "completed_utc": "2026-10-18T21:40:34.185863+00:00",
+  "records": 3300,
+  "successful": 3207,
+  "failures": 93,
+  "brier": 0.25873458590583104,
+  "baseline_brier": 0.25090341205356254,
+  "brier_skill_pct": -3.1211906558674896,
+  "accuracy_pct": 53.2896788275647,
+  "baseline_accuracy_pct": 53.10258808855628,
+  "volatility_skill_pct": 10.98669736788459,
+  "positive_stock_brier_skill": 33,
+  "holm_confirmed": 0,
+  "parameter_uncertainty": "Plug-in MLE; omitted",
+  "median_runtime_seconds": 0.021485666002263315
+}

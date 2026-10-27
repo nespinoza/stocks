@@ -1,0 +1,26 @@
+{
+  "command": "MPLCONFIGDIR=/tmp/stocks-matplotlib-audit OPENBLAS_NUM_THREADS=1 .conda-env/bin/python scripts/run_portfolio_gp_22.py",
+  "python": "3.13.15 | packaged by conda-forge | (main, Sep  2 2026, 21:53:23) [Clang 21.1.8 ]",
+  "packages": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "pandas": "2.3.3",
+    "matplotlib": "3.11.1",
+    "exchange-calendars": "4.13.2",
+    "yfinance": "0.2.66"
+  },
+  "hashes": {
+    "reports/monthly-stock-screen-2026-10-18/REPORT.md": "742a4289614d73ddd2b8f822ea0cb18ec9f7a55cb347bcbb5c7e7dfccc7d4b7a",
+    "stock_api/heteroskedastic.py": "580ef8b9c2d7e42ad34415f58839ad8c4174014a4bdea8991a1ea0a310bb75b0",
+    "stock_api/sde.py": "91371257394fc6df4a0a202f2017049df682edaa4c4c2136f2108b878869a148",
+    "stock_api/data.py": "3a0684329bb61717e6e735bb4a09ebd00abb63a2a51c3ab9ec3329e3d6dc65a1",
+    "stock_api/portfolio.py": "cdfabe490fca0451fbd863d6bbdadf15d8635a183b160027744e972aa526daee",
+    "scripts/run_portfolio_gp_22.py": "81893d8b754c4443e1a308d7b90881a4fadc283bbc6c2d8bfafa74e8fa4ab321",
+    "scripts/portfolio_gp_report.py": "4f1d34d5b8ec9368ba5b4f022ec07b296b2fea1463602bec546d21afdebbe84d",
+    "scripts/audit_portfolio_gp_22.py": "ce969a0fefcf35099ea8c6c0eecd51474bf4d20a63e07a2f8f690601fb81f474",
+    "tests/test_portfolio.py": "10bc101586afda54d5995decadd4f5b8511e14ac8883a7f0fe392f3c2f443618",
+    "environment.yml": "2f8bf9fad0a01108f0ccc75c1469dafa91edbef34686c3dfbd70c3da52a5e0df",
+    "pyproject.toml": "d2950c9004b0969babaa411b23e4636cfd1b63ed124b0d01e11fb60ada8e084a"
+  },
+  "config_sha256": "eabc641de30b10d543a0b911380703a7af1b04f9c63861d59804d618038dfe80"
+}

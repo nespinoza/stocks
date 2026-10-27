@@ -1,0 +1,57 @@
+window,strategy,baseline,metric,difference,lower95,upper95,months,unit
+A,GP + Macro,GP only,mae,0.0015569001387495695,-0.0012051415581757032,0.006123345926116462,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro,GP only,mse,0.0006342811529495619,-0.0005608478674380996,0.002556973063158391,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro,GP only,crps,0.0010876480928772893,-0.0006501082724651081,0.003905762919439304,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro,GP only,spearman,0.0436796505627955,-0.053475172198622405,0.1374937000503995,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP only,mae,0.0024751089954345514,-0.000613270632869256,0.007207713819249709,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP only,mse,0.0007005025157846068,-0.0006942513948417236,0.0027730189895602336,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP only,crps,0.0013219999870505185,-0.0006139082827260041,0.004320554913904371,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP only,spearman,0.07718338253293974,0.002395180838553296,0.15480116159070728,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro placebo,GP only,mae,0.001759566267799231,-0.00024055554021914098,0.005137176498765305,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro placebo,GP only,mse,0.0007106738719348626,-7.039782615009087e-05,0.0020114651452113174,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro placebo,GP only,crps,0.0011162335029138626,-0.0002779088985633352,0.003456853293380661,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro placebo,GP only,spearman,0.025679794561643522,-0.06537787697698418,0.11650346797225616,43,whole market-month; unadjusted exploratory interval
+A,GP + News (deterministic),GP only,mae,0.0008771835617249892,-0.0008224141806123545,0.0028279152079055546,43,whole market-month; unadjusted exploratory interval
+A,GP + News (deterministic),GP only,mse,1.9096873493287915e-05,-0.000773086323673169,0.0007767459228647703,43,whole market-month; unadjusted exploratory interval
+A,GP + News (deterministic),GP only,crps,0.0001516105002230902,-0.0007923760413248068,0.001110952663396402,43,whole market-month; unadjusted exploratory interval
+A,GP + News (deterministic),GP only,spearman,0.06292749658002736,0.0017747858017135908,0.13022895816833463,43,whole market-month; unadjusted exploratory interval
+A,GP + News placebo,GP only,mae,0.0004460037255783233,-0.0010375089635995748,0.0017568394161605705,43,whole market-month; unadjusted exploratory interval
+A,GP + News placebo,GP only,mse,0.00010601448660260679,-0.0006175836493746409,0.0008336705733343498,43,whole market-month; unadjusted exploratory interval
+A,GP + News placebo,GP only,crps,9.637086302144599e-05,-0.0009004059888174062,0.0009651525588012473,43,whole market-month; unadjusted exploratory interval
+A,GP + News placebo,GP only,spearman,0.025919792641658886,-0.05381476948184413,0.10497876016991861,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP + Macro,mae,0.0009182088566849819,-7.398625198838253e-05,0.0020871979367083618,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP + Macro,mse,6.62213628350451e-05,-0.000403416992184395,0.0005137958150661972,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP + Macro,crps,0.00023435189417322921,-0.0003063453681110386,0.0007682544891178523,43,whole market-month; unadjusted exploratory interval
+A,GP + Macro + News (deterministic),GP + Macro,spearman,0.033503731970144245,-0.015853073175414588,0.08875368997048022,43,whole market-month; unadjusted exploratory interval
+B,GP + Macro,GP only,mae,0.0004129806889707793,-0.0003808137969397933,0.0012796405715135137,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro,GP only,mse,0.000343706475323514,-0.0002490101796555474,0.0009515025865761592,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro,GP only,crps,0.0003038897176905133,-0.00016871603962954285,0.0007797673141787093,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro,GP only,spearman,-0.028571428571428574,-0.09714536340852131,0.03849874686716791,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP only,mae,0.0017660643210499168,-0.0019123605731855486,0.005435107099102594,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP only,mse,0.00010567981972174993,-0.002112972775252332,0.0021522268317759707,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP only,crps,0.0001345002096578618,-0.0015782034645141461,0.0018481360750561763,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP only,spearman,0.011428571428571422,-0.06397243107769422,0.08822305764411026,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro placebo,GP only,mae,9.755620171545224e-05,-0.00010528891138512103,0.00036766143872002984,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro placebo,GP only,mse,6.930023999628503e-05,-0.0001062681623124881,0.0003006348546909118,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro placebo,GP only,crps,-3.765471814389428e-05,-0.00032404946624010607,0.00020498638919186325,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro placebo,GP only,spearman,0.06967418546365914,-0.02427819548872181,0.15621052631578933,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP only,mae,0.00022500374982256562,-0.0005809338671365701,0.0009694394710075984,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP only,mse,0.00020334087139701264,-0.00035114768741694564,0.0007344309198286105,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP only,crps,0.0001746940487150711,-0.0002860290439047735,0.000616021447073343,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP only,spearman,-0.01914786967418547,-0.07660651629072683,0.03629072681704259,15,whole market-month; unadjusted exploratory interval
+B,GP + News (deterministic),GP only,mae,0.0017957244314849316,-0.0017397098865026487,0.005909840619388308,15,whole market-month; unadjusted exploratory interval
+B,GP + News (deterministic),GP only,mse,-0.0001793303973574016,-0.0023683663008110074,0.0019547522513576783,15,whole market-month; unadjusted exploratory interval
+B,GP + News (deterministic),GP only,crps,-9.072748871353138e-05,-0.001988513709210387,0.0019540733539477125,15,whole market-month; unadjusted exploratory interval
+B,GP + News (deterministic),GP only,spearman,0.010526315789473677,-0.0757994987468672,0.09934837092731831,15,whole market-month; unadjusted exploratory interval
+B,GP + News placebo,GP only,mae,0.0014034636807011946,-0.002986563485685508,0.006414112775675173,15,whole market-month; unadjusted exploratory interval
+B,GP + News placebo,GP only,mse,-0.0005076856949973246,-0.003591777561481222,0.0022108347868833307,15,whole market-month; unadjusted exploratory interval
+B,GP + News placebo,GP only,crps,-0.0003747239788555142,-0.003085917402954199,0.0021897221194124195,15,whole market-month; unadjusted exploratory interval
+B,GP + News placebo,GP only,spearman,-0.039298245614035075,-0.15538847117794485,0.07570676691729315,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP + Macro,mae,0.0013530836320791374,-0.001809230558724454,0.004742302677621643,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP + Macro,mse,-0.00023802665560176405,-0.0021827661883515315,0.0016151181183465925,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP + Macro,crps,-0.00016938950803265147,-0.0017759072360118608,0.0015332178154134643,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro + News (deterministic),GP + Macro,spearman,0.04000000000000001,-0.03448872180451127,0.1429598997493734,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP + Macro,mae,-0.00018797693914821372,-0.0004428078067011424,1.985765961447417e-05,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP + Macro,mse,-0.00014036560392650133,-0.00030140142658424294,-1.7747077527787791e-06,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP + Macro,crps,-0.00012919566897544218,-0.0002916794484738214,6.763675151824917e-06,15,whole market-month; unadjusted exploratory interval
+B,GP + Macro transfer,GP + Macro,spearman,0.009423558897243105,-0.008721804511278193,0.029375939849624035,15,whole market-month; unadjusted exploratory interval

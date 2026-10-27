@@ -1,0 +1,103 @@
+{
+  "study": "portfolio_gp_universe_robustness_2026-10-19",
+  "seed": 20261019,
+  "model": "unchanged price-only estimated-drift heteroskedastic GP",
+  "windows": {
+    "A": {
+      "selection": "2019-07-16T16:00:00-04:00",
+      "gp_history_reset": "2019-01-01",
+      "evaluation_start": "2019-07-17",
+      "end": "2023-01-31"
+    },
+    "B": {
+      "selection": "2025-07-16T16:00:00-04:00",
+      "gp_history_reset": "2025-01-01",
+      "evaluation_start": "2025-07-17",
+      "end": "2026-10-16"
+    }
+  },
+  "groups": {
+    "A": {
+      "name": "Broad US market",
+      "portfolios": 10,
+      "stocks": 20,
+      "sector_quotas": {
+        "Information Technology": 4,
+        "Health Care": 3,
+        "Financials": 3,
+        "Industrials": 2,
+        "Consumer Discretionary": 2,
+        "Communication Services": 2,
+        "Energy": 1,
+        "Consumer Staples": 1,
+        "Utilities": 1,
+        "Materials or Real Estate": 1
+      }
+    },
+    "B": {
+      "name": "Technology",
+      "portfolios": 10,
+      "stocks": 20
+    },
+    "C": {
+      "name": "Historical momentum top quintile",
+      "portfolios": 10,
+      "stocks": 20
+    }
+  },
+  "sampling": "SeedSequence([20261019, window_index, group_index, portfolio_index]); sorted permanent security IDs; independent draws without replacement within portfolio; overlap allowed between portfolios",
+  "parent_universe": "Historical major-US-exchange USD operating-company common equities/ADRs, including subsequently delisted securities; historical sector classification required. Public S&P lists are audit proxies, not silently substituted study universes.",
+  "eligibility": {
+    "minimum_price_exclusive": 10.0,
+    "price_units": "actual historical unadjusted share price, not current split-adjusted close",
+    "minimum_median_dollar_volume": 10000000.0,
+    "liquidity_sessions": 63,
+    "minimum_prior_price_observations": 253,
+    "share_classes": "one per issuer, highest trailing 63-session median dollar volume, stable security ID tie break",
+    "exclude": "ETFs, preferreds, warrants, SPAC/blank-check companies, OTC-only securities"
+  },
+  "momentum": {
+    "long_lag": 252,
+    "skip_lag": 21,
+    "definition": "log(P[t-21]/P[t-252]) in total-return price units",
+    "selection_pool": "top ceil(0.2*N) eligible stocks; stable ID tie break"
+  },
+  "gp_lookback": 30,
+  "horizon": "exact sessions from origin through next rebalance preceding close; final period through cutoff close",
+  "horizon_clarification": "Task mentions 30-day forecast horizon, but preserved prior implementation uses a 30-session lookback and calendar monthly horizons. No numerical-model change.",
+  "paths": 10000,
+  "cap": 0.2,
+  "initial_dollars": 2000.0,
+  "cost_bps": 10.0,
+  "correlation_shrinkage": 0.5,
+  "gp_seed": "20261019 + YYYYMMDD(origin); cache key additionally includes ordered permanent security IDs, prices, core hashes and horizon",
+  "execution": "previous close information; adjusted open first trading day on/after 17th; next scheduled adjusted open exit, final cutoff adjusted close",
+  "benchmarks": {
+    "equal": "1/N",
+    "inverse_volatility": "inverse sample SD of 63 trailing daily log returns; capped proportional water filling",
+    "momentum": "cross-sectional average rank of 12-2 momentum, ascending positive ranks; capped proportional water filling",
+    "spy": "buy and hold, same dates and entry fee, exemption from stock cap"
+  },
+  "corporate_actions": "No replacements. Preserve verified losses/proceeds. Corporate cash held until next scheduled rebalance, then reallocated among tradable original constituents. Share consideration needs actual documented conversion and liquidation accounting. No assumed last-close liquidation, perpetual stale marks or pre-listing fills. Stop on unknown terminal outcomes; stop if remaining tradable original names cannot satisfy 20% cap.",
+  "statistics": {
+    "bootstrap_replicates": 2000,
+    "block_holding_months": 3,
+    "resampling": "one synchronized block-index stream per window across all portfolio IDs/groups/benchmarks",
+    "interpretation": "conditional on observed allocations and fixed universes; not a refit bootstrap; portfolios/stock-months are not independent evidence",
+    "primary": "GP minus equal-weight cumulative net return and win fraction",
+    "interval": 0.95
+  },
+  "failure_policy": "Missing candidate eligibility history, sector provenance, identifiers or terminal outcomes blocks dependent sampling/backtests; never exclude/redraw based on future performance or data availability",
+  "core_hashes": {
+    "stock_api/heteroskedastic.py": "580ef8b9c2d7e42ad34415f58839ad8c4174014a4bdea8991a1ea0a310bb75b0",
+    "stock_api/portfolio.py": "cdfabe490fca0451fbd863d6bbdadf15d8635a183b160027744e972aa526daee",
+    "scripts/run_portfolio_gp_22.py": "81893d8b754c4443e1a308d7b90881a4fadc283bbc6c2d8bfafa74e8fa4ab321"
+  },
+  "estimated_compute": {
+    "joint_forecasts": 1740,
+    "univariate_GP_fits_without_deduplication": 34800,
+    "simulated_joint_paths": 17400000
+  },
+  "forbidden": "macro/news variants, GP tuning, reducing paths, current survivor selection, outcome-based redraws",
+  "lambda": 10.0
+}

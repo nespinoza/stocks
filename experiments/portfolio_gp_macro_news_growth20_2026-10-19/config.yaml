@@ -1,0 +1,150 @@
+{
+  "study": "portfolio_gp_macro_news_growth20_2026-10-19",
+  "seed": 20261019,
+  "source_report": null,
+  "source_prices": "reports/monthly-stock-screen-2026-10-18/data",
+  "previous_experiment": "experiments/portfolio_gp_22_2026-10-18",
+  "windows": {
+    "A": {
+      "start": "2019-01-01",
+      "train_end": "2019-06-30",
+      "evaluation_start": "2019-07-01",
+      "end": "2023-01-31"
+    },
+    "B": {
+      "start": "2025-04-08",
+      "train_end": "2025-06-30",
+      "evaluation_start": "2025-07-01",
+      "end": "2026-10-16",
+      "requested_start": "2025-01-01"
+    }
+  },
+  "rebalance_day": 17,
+  "gp_lookback": 30,
+  "paths": 10000,
+  "lambda": 10,
+  "cost_bps": 10,
+  "initial_dollars": 2000,
+  "cap": 0.2,
+  "correlation_shrinkage": 0.5,
+  "macro_series": {
+    "DGS2": "2-year Treasury yield, percent",
+    "T10YIE": "10-year inflation compensation, percent; not a survey surprise",
+    "CPIAUCSL": "CPI seasonally adjusted index; vintage-specific year-over-year percent",
+    "DCOILWTICO": "WTI spot USD/barrel; transformed asinh(value/50), supports negative prices",
+    "UNRATE": "Unemployment rate, percent",
+    "VIXCLS": "VIX closing index; log level"
+  },
+  "macro_information_cutoff": "end of calendar day BEFORE GP forecast origin; ALFRED snapshot date is verified availability upper bound, not original publication time",
+  "macro_factors": [
+    "rates",
+    "inflation_expectations",
+    "inflation",
+    "oil",
+    "unemployment",
+    "volatility"
+  ],
+  "fixed_factor_scales": [
+    0.5,
+    0.5,
+    0.5,
+    0.2,
+    0.25,
+    0.2
+  ],
+  "market_scale": 0.05,
+  "exposure_ridge": 6,
+  "incremental_ridge": 24,
+  "ar_ridge": 12,
+  "minimum_completed_incremental_months": 3,
+  "exposure_window_months": 24,
+  "ar_window_months": 24,
+  "transfer_prior": "Window A final posterior means; covariance inflation 4; extra precision eigenvalues capped at 6 equivalent standardized observations; weak prior remains",
+  "news_sources": "all archived FOMC statements in windows; GDELT 2.0 event records at 12:00 UTC on days 5 and 15 of every window month",
+  "news_sample_days": [
+    5,
+    15
+  ],
+  "news_sample_utc": "120000",
+  "news_delay_hours": 24,
+  "news_lookback_days": 35,
+  "gdelt_countries": [
+    "USA",
+    "CHN",
+    "RUS",
+    "UKR",
+    "IRN",
+    "ISR",
+    "SAU"
+  ],
+  "news_features": [
+    "policy_direction",
+    "inflation_attention",
+    "growth_weakness",
+    "trade_attention",
+    "conflict_attention"
+  ],
+  "news_classifier": "deterministic version 1; LLM unavailable, NOT evaluated",
+  "predictive_covariance": "retain GP covariance for matched mean-information comparisons; conditional plug-in corrections, not fully integrated macro/news parameter uncertainty",
+  "placebo": "permute completed historical feature rows with frozen seeds, jointly across stocks; preserve labels and current information cutoff; sensitivity only",
+  "bootstrap": {
+    "replicates": 2000,
+    "block_months": 3,
+    "unit": "whole market month, all eligible assets together",
+    "interval": 0.95
+  },
+  "failure_policy": "never replace missing data or failed forecasts silently; report and stop dependent work",
+  "selection_limitation": "User selected growing stocks in October 2026: hindsight winner selection in both windows. The 2026 interval and methodology were already examined; exploratory replication.",
+  "universe_source": "Exact user-supplied symbols on 2026-10-19; growth ranking not independently validated",
+  "ticker_count": 20,
+  "reuse_previous_gp": false,
+  "window_tickers": {
+    "A": [
+      "MXL",
+      "DELL",
+      "AXTI",
+      "BAND",
+      "SILC",
+      "PENG",
+      "MU",
+      "AEHR",
+      "RNG",
+      "QMCO",
+      "MRVL",
+      "AMD",
+      "INTC",
+      "HPE",
+      "SIMO",
+      "OKTA",
+      "STX",
+      "FTNT"
+    ],
+    "B": [
+      "MXL",
+      "DELL",
+      "AXTI",
+      "BAND",
+      "SAIH",
+      "SILC",
+      "PENG",
+      "MU",
+      "AEHR",
+      "RNG",
+      "QMCO",
+      "MRVL",
+      "AMD",
+      "FATN",
+      "INTC",
+      "HPE",
+      "SIMO",
+      "OKTA",
+      "STX",
+      "FTNT"
+    ]
+  },
+  "missing_history_policy": "A: explicitly labelled 18-stock diagnostic excludes SAIH/FATN, no substitutes. B: all 20, common history starts FATN IPO 2025-04-08; retain July evaluation; short warmup disclosed; transfer only 18 eligible stocks.",
+  "transfer_unavailable": [
+    "SAIH",
+    "FATN"
+  ]
+}

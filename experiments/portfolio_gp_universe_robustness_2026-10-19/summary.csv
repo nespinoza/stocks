@@ -1,0 +1,7 @@
+window,group,group_name,planned,completed,median_gp_excess_pp,mean_gp_excess_pp,gp_win_fraction,median_sharpe_difference,median_drawdown_difference,excess_standard_deviation_pp,paired_lower95,paired_upper95,status
+A,A,Broad US market,10,0,,,,,,,,,BLOCKED_DATA
+A,B,Technology,10,0,,,,,,,,,BLOCKED_DATA
+A,C,Historical momentum top quintile,10,0,,,,,,,,,BLOCKED_DATA
+B,A,Broad US market,10,0,,,,,,,,,BLOCKED_DATA
+B,B,Technology,10,0,,,,,,,,,BLOCKED_DATA
+B,C,Historical momentum top quintile,10,0,,,,,,,,,BLOCKED_DATA
