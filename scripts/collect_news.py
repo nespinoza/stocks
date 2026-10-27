@@ -3,14 +3,16 @@
 GDELT DOC headlines (rolling ~3-month window, one request per ~6 s, so the
 full universe takes a few hours) and SEC EDGAR 8-K filings (needs
 SEC_USER_AGENT="<name> <email>"). Re-running only adds new documents, so this
-can run daily from cron going forward.
+can run daily from cron going forward. GDELT throttles bulk back-fills
+heavily, so the practical route is a small daily pull of the last few days:
 
-    .conda-env/bin/python scripts/collect_news.py --start 2026-07-28 --end 2026-10-27 --sources gdelt
+    .conda-env/bin/python scripts/collect_news.py --days-back 3
+    .conda-env/bin/python scripts/collect_news.py --start 2026-07-28 --end 2026-10-27 --sources edgar
 """
 import argparse
 import json
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -22,8 +24,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--start', required=True, help='UTC start date, YYYY-MM-DD')
-    parser.add_argument('--end', required=True, help='UTC end date (exclusive), YYYY-MM-DD')
+    parser.add_argument('--start', help='UTC start date, YYYY-MM-DD')
+    parser.add_argument('--end', help='UTC end date (exclusive), YYYY-MM-DD')
+    parser.add_argument('--days-back', type=int, default=0, help='Instead of --start/--end: the last N full UTC days')
     parser.add_argument('--sources', default='gdelt,edgar')
     parser.add_argument('--tickers', default='', help='Comma-separated subset (default: all)')
     parser.add_argument('--max-records', type=int, default=75, help='GDELT articles per ticker-window query (max 250)')
@@ -34,8 +37,14 @@ def main():
     args = parser.parse_args()
     config = json.loads((ROOT/'configs/news_universe.json').read_text())
     tickers = args.tickers.split(',') if args.tickers else list(config['stocks'])
-    start = datetime.fromisoformat(args.start).replace(tzinfo=timezone.utc)
-    end = datetime.fromisoformat(args.end).replace(tzinfo=timezone.utc)
+    if args.days_back:
+        end = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        start = end-timedelta(days=args.days_back)
+    elif args.start and args.end:
+        start = datetime.fromisoformat(args.start).replace(tzinfo=timezone.utc)
+        end = datetime.fromisoformat(args.end).replace(tzinfo=timezone.utc)
+    else:
+        parser.error('give --start and --end, or --days-back')
     store = sources.DocumentStore(args.store)
     session = requests.Session()
     log_path = ROOT/'data_store/news/collect_log.jsonl'

@@ -232,7 +232,7 @@ The only truly out-of-sample test. Freeze universe, models, prompts and rules at
 2. Build `evaluation/` (IC, attribution, DM, PIT/VaR tests, DSR) and the synthetic-recovery and null tests. Re-score the **existing** saved forecasts with them. *(about 1 week)*
 3. Switch to an ETF universe; implement HAR-RV + factor/Ledoit–Wolf risk + risk-parity base portfolio; benchmark GP-vol and GJR against HAR. *(about 1–2 weeks)*
 4. Black–Litterman layer; add momentum/reversal as explicit, measured views; turnover bands and a cost model. *(Done 2026-10-27: no momentum view survives beta adjustment and deflation; turnover control helps. See `reports/etf-black-litterman-2026-10-27/REPORT.md`.)*
-5. News pipeline: EDGAR 8-Ks + one news API → LLM structured extraction → IC study on post-cutoff data → BL views + event-variance bumps.
+5. News pipeline: EDGAR 8-Ks + one news API → LLM structured extraction → IC study on post-cutoff data → BL views + event-variance bumps. *(Built 2026-10-27; EDGAR-only first study: LLM next-day IC +0.23, t 3.0, on 29 cross-sections, not yet significant after multiple testing; volatility flag predicts post-event variance. GDELT back-fill was rate-limited, so headlines accumulate daily from now. See `reports/news-pipeline-2026-10-27/REPORT.md`.)*
 6. Paper-trading agent with risk limits and logging; then a prospective evaluation.
 
 ## Appendix: how the B1 numbers were computed

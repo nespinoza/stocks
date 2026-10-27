@@ -526,3 +526,18 @@ See [reports/etf-risk-study-2026-10-27/REPORT.md](reports/etf-risk-study-2026-10
 Then `scripts/run_etf_bl_study.py` tests Black–Litterman momentum views on the
 risk-parity base; see
 [reports/etf-black-litterman-2026-10-27/REPORT.md](reports/etf-black-litterman-2026-10-27/REPORT.md).
+
+## News pipeline
+
+| Module | Contents |
+|---|---|
+| `stock_api.news.sources` | GDELT DOC 2.0 headlines (throttled) and SEC EDGAR 8-K filings with press-release text; append-only JSONL document store |
+| `stock_api.news.extraction` | JSON-schema LLM extraction (relevance, event type, direction, surprise, magnitude, volatility flag) with a cache; backends for headless Claude Code (`claude -p`), the Anthropic API and a mock |
+| `stock_api.news.lexicon` | Loughran–McDonald tone baseline (dictionary downloaded at run time, academic licence) |
+| `stock_api.news.aggregate` | close-based session assignment, de-duplication, per-stock scores, decay, cross-sectional z-scores, sector-ETF roll-up, variance bump |
+
+The universe (112 large caps mapped to sector ETFs) is `configs/news_universe.json`.
+Run `scripts/collect_news.py` (EDGAR needs `SEC_USER_AGENT="<name> <email>"`;
+`--days-back 3` for a daily pull), then `scripts/score_news.py --limit N` and
+`scripts/run_news_study.py`. See
+[reports/news-pipeline-2026-10-27/REPORT.md](reports/news-pipeline-2026-10-27/REPORT.md).

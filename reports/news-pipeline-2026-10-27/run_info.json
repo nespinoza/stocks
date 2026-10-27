@@ -1,0 +1,36 @@
+{
+  "model_alias": "haiku",
+  "since": "2026-07-01",
+  "counts": {
+    "llm_items": 371,
+    "relevant_items": 371,
+    "sessions": 82,
+    "first": "2026-07-01",
+    "last": "2026-10-26",
+    "by_source": {
+      "edgar-8k": 371
+    },
+    "by_event": {
+      "earnings": 141,
+      "management": 68,
+      "capital": 65,
+      "guidance": 26,
+      "mna": 22,
+      "other": 20,
+      "operations": 18,
+      "legal_regulatory": 10,
+      "product": 1
+    }
+  },
+  "agreement": {
+    "spearman_direction_vs_lm": 0.393351094099523,
+    "share_lm_zero": 0.2587601078167116,
+    "items": 371
+  },
+  "models": [
+    "claude-haiku-5-5"
+  ],
+  "prompt_versions": [
+    "news-extract-v1"
+  ]
+}
