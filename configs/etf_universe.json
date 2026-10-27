@@ -1,0 +1,11 @@
+{
+  "description": "Liquid, long-lived US-listed ETFs spanning asset classes. Chosen for coverage and history (inception before mid-2007), not performance. Avoids the delisting/survivorship problems of single-stock universes; residual ETF survivorship is small but nonzero.",
+  "start": "2007-04-11",
+  "groups": {
+    "us_equity": ["SPY", "QQQ", "IWM", "MDY", "IWD", "IWF"],
+    "us_sectors": ["XLB", "XLE", "XLF", "XLI", "XLK", "XLP", "XLU", "XLV", "XLY", "IYR"],
+    "international_equity": ["EFA", "EEM", "EWJ", "EWG", "EWU", "EWC", "EWA", "EWZ", "EWH", "EWT", "EWY", "EWW", "EWS", "FXI"],
+    "bonds": ["SHY", "IEF", "TLT", "LQD", "TIP", "AGG", "HYG"],
+    "commodities": ["GLD", "SLV", "DBC", "USO"]
+  }
+}

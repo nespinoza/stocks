@@ -505,3 +505,19 @@ backtests:
 
 `scripts/rescore_saved_forecasts.py` applies it to the saved GP portfolio studies;
 see [reports/evaluation-rescore-2026-10-27/REPORT.md](reports/evaluation-rescore-2026-10-27/REPORT.md).
+
+## Risk engine and backtests
+
+| Module | Contents |
+|---|---|
+| `stock_api.risk` | Garman–Klass variance, log-HAR-RV forecasts, EWMA, rolling variance, Ledoit–Wolf covariance and correlation, PCA factor covariance |
+| `stock_api.allocation` | inverse volatility, equal-risk-contribution (risk parity), capped minimum variance |
+| `stock_api.engine` | the shared walk-forward engine: decide at a close, execute at the next close, proportional costs, drifting holdings; `performance()` summaries |
+
+The ETF research universe (41 liquid ETFs across equities, sectors, countries,
+bonds and commodities, all trading since April 2007) is defined in
+`configs/etf_universe.json`. Download it with
+`.conda-env/bin/python scripts/download_etf_universe.py --end YYYY-MM-DD`
+into git-ignored `data_store/etf/`, then run
+`OPENBLAS_NUM_THREADS=1 .conda-env/bin/python scripts/run_etf_risk_study.py`.
+See [reports/etf-risk-study-2026-10-27/REPORT.md](reports/etf-risk-study-2026-10-27/REPORT.md).
