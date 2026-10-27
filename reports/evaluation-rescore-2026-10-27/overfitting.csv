@@ -1,0 +1,9 @@
+test,dsr,sharpe,threshold_sharpe,n_trials,n,annualized_sharpe,pbo,splits,median_logit,configurations
+"Deflated Sharpe, primary GP vs its 18-config grid",0.5972726170449509,0.051657979808814876,0.029613762221940086,18.0,127.0,0.8200450068367207,,,,
+"Deflated Sharpe, assuming 50 configurations tried repository-wide",0.56784940685548,0.051657979808814876,0.036361655395181776,50.0,127.0,,,,,
+"Deflated Sharpe, assuming 100 configurations tried repository-wide",0.5499424305831488,0.051657979808814876,0.040423839255248756,100.0,127.0,,,,,
+"PBO (CSCV, 8 blocks) across the grid",,,,,,,0.6714285714285714,70.0,-1.175687628581739,
+"PBO across GP variants, 22-stock window A",,,,,,,0.5714285714285714,70.0,-0.2876820724517809,6.0
+"PBO across GP variants, 22-stock window B",,,,,,,0.9,70.0,-1.0986122886681098,7.0
+"PBO across GP variants, growth-20 window A",,,,,,,0.42857142857142855,70.0,0.28768207245178085,6.0
+"PBO across GP variants, growth-20 window B",,,,,,,0.8,70.0,0.0,7.0

@@ -488,3 +488,20 @@ in [HISTORICAL_VALIDATION.md](HISTORICAL_VALIDATION.md). It supports arbitrary
 target/auxiliary tickers, weekly folds, Bayesian GP forecasts, atomic checkpoints,
 and reliability/calibration reports regenerated from saved forecasts.
 The full 2016–2026 experiment is prepared, **not started or scheduled**.
+
+## Evaluation toolkit
+
+`stock_api.evaluation` holds model-independent tests for forecasts, signals and
+backtests:
+
+| Module | Contents |
+|---|---|
+| `stats` | Newey–West long-run variance, HAC mean tests, Diebold–Mariano (with HLN correction) |
+| `calibration` | PIT from samples/quantiles, Berkowitz, Kupiec, Christoffersen, QLIKE |
+| `signals` | per-date information coefficient, IC summary with HAC t, cross-sectional neutralization, quantile spreads |
+| `attribution` | Kenneth French FF5 + momentum + short-term-reversal loader (cached in `data_store/`), factor regressions with HAC t |
+| `overfitting` | probabilistic and deflated Sharpe ratios, CSCV probability of backtest overfitting |
+| `synthetic` | null and planted-signal data for testing a pipeline before trusting it |
+
+`scripts/rescore_saved_forecasts.py` applies it to the saved GP portfolio studies;
+see [reports/evaluation-rescore-2026-10-27/REPORT.md](reports/evaluation-rescore-2026-10-27/REPORT.md).
