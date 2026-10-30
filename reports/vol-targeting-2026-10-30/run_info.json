@@ -1,0 +1,31 @@
+{
+  "start": "2010-02-01",
+  "end": "2026-10-26",
+  "cost_bps": 5.0,
+  "horizon": 21,
+  "targets": {
+    "SPY": [
+      0.1,
+      0.15
+    ],
+    "60/40": [
+      0.06,
+      0.08
+    ]
+  },
+  "best_by_hedged_active_sharpe": [
+    "60/40",
+    "har",
+    "6%",
+    "monthly",
+    "0.0"
+  ],
+  "deflated_sharpe": {
+    "dsr": 0.4292128548371901,
+    "sharpe": 0.01696949421670609,
+    "threshold_sharpe": 0.019737674105788125,
+    "n_trials": 32,
+    "n": 4210
+  },
+  "data": "Yahoo adjusted closes SPY/IEF/BIL from data_store/etf (manifest checksums)"
+}

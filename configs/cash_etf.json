@@ -1,0 +1,4 @@
+{
+  "description": "T-bill ETF used as the cash leg for volatility targeting (kept out of the 41-ETF research universe).",
+  "groups": {"cash": ["BIL"]}
+}

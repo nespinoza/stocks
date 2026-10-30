@@ -35,6 +35,8 @@ def main():
     manifest = {'retrieved_utc': datetime.now(timezone.utc).isoformat(), 'provider': 'Yahoo Finance via yfinance',
                 'yfinance': yf.__version__, 'start': args.start, 'end_exclusive': args.end,
                 'auto_adjust': False, 'files': {}}
+    if (out/'manifest.json').exists():  # several configs can share one folder
+        manifest['files'] = json.loads((out/'manifest.json').read_text()).get('files', {})
     for ticker in tickers:
         path = out/f'{ticker}.csv'
         if args.refresh or not path.exists():
