@@ -1,0 +1,19 @@
+{
+  "counts": {
+    "stocks": 696,
+    "eligible_per_date": 529.7685621151757,
+    "sessions": 2761,
+    "first": "2015-10-01",
+    "last": "2026-09-24"
+  },
+  "best_gross_variant": "level_bottom_monthly",
+  "deflated_sharpe": {
+    "dsr": 0.4083275911052386,
+    "sharpe": 0.03339106412882231,
+    "threshold_sharpe": 0.03780598477116859,
+    "n_trials": 4,
+    "n": 2764
+  },
+  "factors_end": "2026-08-31",
+  "universe_built": "2026-10-30"
+}
