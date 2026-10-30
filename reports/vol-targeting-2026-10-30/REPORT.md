@@ -45,8 +45,9 @@ hedged active return across the 32 variants is 0.43.
 2. **It cuts drawdowns and volatility for free.** For the same average
    exposure, the worst drawdown is about a third smaller (SPY at 10%:
    −16% vs −24%; 60/40 at 6%: −11% vs −15%), and volatility is 1–2 points
-   lower. The forecasts move money out before and during volatile stretches
-   (2020, 2022), which is where the static mix takes its worst losses.
+   lower. Volatility clusters, so cutting exposure once forecast volatility
+   rises avoids part of the losses that follow; that it did not also raise
+   the Sharpe ratio means the calmer periods it kept were not more profitable.
 3. **Use it as the risk dial for the base portfolio.** Monthly HAR is enough. It
    costs nothing beyond the T-bill ETF and a few trades a year.
 4. **It is not a way to beat SPY.** Matching SPY's return would need leverage
