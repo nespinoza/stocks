@@ -1,0 +1,28 @@
+{
+  "counts": {
+    "trades": 226456,
+    "purchases": 54908,
+    "sales": 171548,
+    "stocks_with_purchases": 1483,
+    "opportunistic_purchases": 16790,
+    "routine_purchases": 4844,
+    "universe": 1596
+  },
+  "start": "2010-01-04",
+  "end": "2026-10-29",
+  "costs_bps": [
+    0.0,
+    20.0,
+    40.0
+  ],
+  "best_variant": "buy_3m",
+  "deflated_sharpe": {
+    "dsr": 0.5550510937404272,
+    "sharpe": 0.01526248314858725,
+    "threshold_sharpe": 0.013116539295631122,
+    "n_trials": 5,
+    "n": 4150
+  },
+  "factors_end": "2026-08-31",
+  "universe_built": "2026-10-30"
+}

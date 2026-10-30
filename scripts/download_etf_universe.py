@@ -2,6 +2,8 @@
 
 Default: configs/etf_universe.json into data_store/etf/. For the news stocks:
     --config configs/news_universe.json --out data_store/stocks --start 2024-01-01
+For the broad small/mid-cap universe:
+    --config configs/broad_universe.json --out data_store/broad --start 2010-01-01 --skip-missing
 
 Writes one CSV per ticker (raw provider fields, auto_adjust=False) and a
 manifest with checksums. Existing files are kept unless --refresh is given.
@@ -26,6 +28,7 @@ def main():
     parser.add_argument('--config', default='configs/etf_universe.json')
     parser.add_argument('--out', default='data_store/etf')
     parser.add_argument('--start', default='2007-01-01')
+    parser.add_argument('--skip-missing', action='store_true', help='Skip tickers with no data instead of failing')
     args = parser.parse_args()
     config = json.loads((ROOT/args.config).read_text())
     tickers = (list(config['stocks']) if 'stocks' in config
@@ -43,7 +46,10 @@ def main():
             frame = yf.Ticker(ticker).history(start=args.start, end=args.end, interval='1d',
                                               auto_adjust=False, actions=True, timeout=30)
             if frame.empty:
-                raise RuntimeError(f'No data for {ticker}')
+                if not args.skip_missing:
+                    raise RuntimeError(f'No data for {ticker}')
+                print(ticker, 'no data, skipped')
+                continue
             frame.index = frame.index.tz_localize(None).normalize()
             frame.index.name = 'Date'
             frame.to_csv(path)
