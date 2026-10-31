@@ -1,0 +1,12 @@
+{
+  "stock_sessions": 4745,
+  "sessions": 85,
+  "outside_hours_share": 0.9469161733817071,
+  "positive": 2183,
+  "negative": 821,
+  "open_to_close_long_minus_short_bp": 9.195837114660137,
+  "t": 0.41408845358228846,
+  "spread_days": 85,
+  "mean_open_to_close_positive_bp": -8.274668537547951,
+  "mean_open_to_close_negative_bp": -50.26499659501265
+}

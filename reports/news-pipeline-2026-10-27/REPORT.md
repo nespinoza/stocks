@@ -1,5 +1,8 @@
 # News pipeline: LLM-scored 8-K filings, first post-cutoff study
 
+**Update 2026-10-31:** the next-day IC below did not replicate on 5,408 filings from 1,596
+small/mid caps (IC −0.025, t −1.4); see `reports/news-broad-2026-10-31/REPORT.md`.
+
 Date: 2026-10-27. 112 large-cap US stocks (`configs/news_universe.json`), mapped
 to 10 SPDR sector ETFs. Reproduce with:
 

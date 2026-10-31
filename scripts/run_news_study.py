@@ -79,7 +79,7 @@ def volatility_channel(items, sessions, prices):
     logs = np.log(prices).diff()
     future = (logs**2).rolling(5).sum().shift(-6)  # close d+1 → d+6, matching the lag-1 holding
     baseline = (logs**2).rolling(63).mean().shift(1)*5  # through d−1, so the event day's own move is excluded
-    ratio = np.log(future/baseline)
+    ratio = np.log(future/baseline).replace([np.inf, -np.inf], np.nan)  # zero-variance windows in illiquid names
     intensity = daily_panel(items, sessions, value='vol_intensity', tickers=list(prices.columns)).reindex(prices.index).fillna(0.)
     any_news = daily_panel(items.assign(one=1.), sessions, value='one', tickers=list(prices.columns)).reindex(prices.index).fillna(0.)
     data = pd.DataFrame({'y': ratio.stack(), 'intensity': intensity.stack(), 'news': (any_news > 0).astype(float).stack()}).dropna()
@@ -109,12 +109,13 @@ def main():
     parser.add_argument('--output', default=str(ROOT/'reports/news-pipeline-2026-10-27'))
     parser.add_argument('--config', default=str(ROOT/'configs/news_universe.json'))
     parser.add_argument('--prices', default=str(ROOT/'data_store/stocks'), help='Folder of per-ticker price CSVs')
+    parser.add_argument('--price-start', default='2024-01-01', help='First price date (the volatility baseline period)')
     args = parser.parse_args()
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=True)
     news = Path(os.environ.get('NEWS_DIR', ROOT/'data_store/news'))
     config = json.loads(Path(args.config).read_text())
-    prices = load_prices(Path(args.prices), list(config['stocks']))
+    prices = load_prices(Path(args.prices), list(config['stocks'])).loc[args.price_start:]
     tickers = list(prices.columns)
     sessions = prices.index
     extractions = ExtractionCache(news/'extractions.jsonl').frame(args.model)
