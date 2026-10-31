@@ -60,6 +60,33 @@ def test_extraction_cache_batches_and_skips_cached(tmp_path):
     assert set(frame.prompt_version) == {extraction.PROMPT_VERSION}
 
 
+def test_usage_limit_stops_and_a_rerun_resumes(tmp_path, monkeypatch):
+    items = [dict(id=extraction.item_key(f'd{i}', 'AAPL'), doc_id=f'd{i}', ticker='AAPL', company='Apple Inc',
+                  source='gdelt', published_utc='2026-10-20T14:00:00+00:00', title='Apple beats', text='')
+             for i in range(5)]
+
+    class Limited(extraction.MockBackend):
+        calls = 0
+
+        def __call__(self, batch):
+            Limited.calls += 1
+            if Limited.calls == 2:
+                raise extraction.UsageLimitError('usage limit reached')
+            return super().__call__(batch)
+    cache = extraction.ExtractionCache(tmp_path/'x.jsonl')
+    with pytest.raises(extraction.UsageLimitError):
+        extraction.extract(items, Limited(), cache, 'mock', batch_size=2, log=None)
+    assert len(extraction.ExtractionCache(tmp_path/'x.jsonl').frame('mock')) == 2  # first batch kept
+    assert extraction.extract(items, Limited(), cache, 'mock', batch_size=2, log=None) == 3
+
+    class Envelope:
+        returncode, stdout = 1, ''
+        stderr = "You've hit your limit · resets 5pm"
+    monkeypatch.setattr(extraction.subprocess, 'run', lambda command, **kwargs: Envelope())
+    with pytest.raises(extraction.UsageLimitError):
+        extraction.ClaudeCodeBackend()(items[:1])
+
+
 def test_validate_drops_unknown_ids_and_incomplete_rows():
     good = dict(id='a', relevance=1, event_type='other', direction=0, surprise=0, magnitude='none',
                 affects_volatility=False, confidence=.5)

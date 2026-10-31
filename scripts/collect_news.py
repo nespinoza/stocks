@@ -8,6 +8,11 @@ heavily, so the practical route is a small daily pull of the last few days:
 
     .conda-env/bin/python scripts/collect_news.py --days-back 3
     .conda-env/bin/python scripts/collect_news.py --start 2026-07-28 --end 2026-10-27 --sources edgar
+
+8-Ks for the broad small/mid-cap universe go to a separate store:
+
+    .conda-env/bin/python scripts/collect_news.py --start 2026-07-01 --end 2026-10-31 --sources edgar \
+        --config configs/broad_universe.json --store data_store/news_broad/documents.jsonl
 """
 import argparse
 import json
@@ -34,8 +39,10 @@ def main():
     parser.add_argument('--spacing', type=float, default=sources.GDELT_SPACING, help='Seconds between GDELT requests')
     parser.add_argument('--cooldown', type=float, default=900., help='Pause after a window exhausts its rate-limit retries')
     parser.add_argument('--store', default=str(ROOT/'data_store/news/documents.jsonl'))
+    parser.add_argument('--config', default=str(ROOT/'configs/news_universe.json'),
+                        help='Universe file; GDELT needs gdelt_phrases, EDGAR only a cik per stock')
     args = parser.parse_args()
-    config = json.loads((ROOT/'configs/news_universe.json').read_text())
+    config = json.loads(Path(args.config).read_text())
     tickers = args.tickers.split(',') if args.tickers else list(config['stocks'])
     if args.days_back:
         end = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -47,7 +54,7 @@ def main():
         parser.error('give --start and --end, or --days-back')
     store = sources.DocumentStore(args.store)
     session = requests.Session()
-    log_path = ROOT/'data_store/news/collect_log.jsonl'
+    log_path = Path(args.store).parent/'collect_log.jsonl'
     # Windows already fetched successfully are skipped, so a re-run only fills gaps.
     done = {(r['query'], r['start'], r['end']) for r in map(json.loads, log_path.open()) if r.get('status') == 'ok'} \
         if log_path.exists() else set()
@@ -78,7 +85,14 @@ def main():
         for ticker in tickers:
             cik = config['stocks'][ticker]['cik']
             docs = []
-            for filing in sources.fetch_8k_index(cik, session, throttle):
+            try:
+                filings = sources.fetch_8k_index(cik, session, throttle)
+            except requests.RequestException as error:  # Logged and skipped; a re-run fills the gap.
+                log.write(json.dumps(dict(source='edgar', ticker=ticker, status=f'error: {error}'[:300],
+                                          at=sources.now_utc()))+'\n')
+                print(f'edgar {ticker}: error {error}', flush=True)
+                continue
+            for filing in filings:
                 accepted = datetime.fromisoformat(filing['accepted'].replace('Z', '+00:00'))
                 if not start <= accepted < end:
                     continue

@@ -13,6 +13,10 @@ without items the LLM labels 'market_move'. The volatility channel regresses
 log(next-5-day realized variance / trailing 63-day variance) on event intensity.
 
     .conda-env/bin/python scripts/run_news_study.py --model haiku
+    NEWS_DIR=data_store/news_broad .conda-env/bin/python scripts/run_news_study.py --config configs/broad_universe.json \
+        --prices data_store/broad --output reports/news-broad-2026-10-31
+
+The sector-ETF roll-up runs only when the universe file lists sector_etfs.
 """
 import argparse
 import json
@@ -31,8 +35,9 @@ HORIZONS = [1, 5, 21]
 
 
 def load_prices(folder, tickers):
-    frames = {t: pd.read_csv(folder/f'{t}.csv', parse_dates=['Date'], index_col='Date')['Adj Close'] for t in tickers
-              if (folder/f'{t}.csv').exists()}
+    frames = {t: pd.read_csv(folder/f'{t}.csv', parse_dates=['Date'], index_col='Date', usecols=['Date', 'Adj Close'])['Adj Close']
+              for t in tickers if (folder/f'{t}.csv').exists()}
+    frames = {t: f[~f.index.duplicated()] for t, f in frames.items()}  # Yahoo occasionally repeats a row
     return pd.DataFrame(frames).sort_index()
 
 
@@ -102,13 +107,15 @@ def main():
     parser.add_argument('--model', default='haiku', help='model alias used when scoring')
     parser.add_argument('--since', default='2026-07-01')
     parser.add_argument('--output', default=str(ROOT/'reports/news-pipeline-2026-10-27'))
+    parser.add_argument('--config', default=str(ROOT/'configs/news_universe.json'))
+    parser.add_argument('--prices', default=str(ROOT/'data_store/stocks'), help='Folder of per-ticker price CSVs')
     args = parser.parse_args()
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=True)
     news = Path(os.environ.get('NEWS_DIR', ROOT/'data_store/news'))
-    config = json.loads((ROOT/'configs/news_universe.json').read_text())
-    tickers = list(config['stocks'])
-    prices = load_prices(ROOT/'data_store/stocks', tickers)
+    config = json.loads(Path(args.config).read_text())
+    prices = load_prices(Path(args.prices), list(config['stocks']))
+    tickers = list(prices.columns)
     sessions = prices.index
     extractions = ExtractionCache(news/'extractions.jsonl').frame(args.model)
     extractions = extractions[extractions.published_utc >= args.since]
@@ -147,14 +154,16 @@ def main():
     vol.to_csv(out/'volatility_channel.csv', index=False)
 
     # Sector-ETF roll-up for the Black–Litterman layer.
-    etf_prices = load_prices(ROOT/'data_store/etf', config['sector_etfs'])
-    etf_z = etf_signal(decay(llm, 5), {t: s['etf'] for t, s in config['stocks'].items()})
-    etf_out = outcome_panels(etf_prices.reindex(sessions))
-    etf_frame = long_frame({'etf_llm_decay5': etf_z}, {k: etf_out[k] for k in ('fwd_5d', 'fwd_21d')},
-                           pd.DataFrame(True, index=etf_z.index, columns=etf_z.columns))
-    etf_frame = etf_frame[etf_frame.date >= args.since]
-    etf_rows = ic_table(etf_frame, ['etf_llm_decay5'], ['fwd_5d', 'fwd_21d'], 'sector ETFs (10)')
-    pd.DataFrame(etf_rows).to_csv(out/'etf_ic.csv', index=False)
+    etf_rows = []
+    if 'sector_etfs' in config:
+        etf_prices = load_prices(ROOT/'data_store/etf', config['sector_etfs'])
+        etf_z = etf_signal(decay(llm, 5), {t: s['etf'] for t, s in config['stocks'].items()})
+        etf_out = outcome_panels(etf_prices.reindex(sessions))
+        etf_frame = long_frame({'etf_llm_decay5': etf_z}, {k: etf_out[k] for k in ('fwd_5d', 'fwd_21d')},
+                               pd.DataFrame(True, index=etf_z.index, columns=etf_z.columns))
+        etf_frame = etf_frame[etf_frame.date >= args.since]
+        etf_rows = ic_table(etf_frame, ['etf_llm_decay5'], ['fwd_5d', 'fwd_21d'], 'sector ETFs (10)')
+        pd.DataFrame(etf_rows).to_csv(out/'etf_ic.csv', index=False)
 
     (out/'run_info.json').write_text(json.dumps(dict(model_alias=args.model, since=args.since, counts=counts,
                                                      agreement=agreement, models=sorted(extractions.model.dropna().unique()),

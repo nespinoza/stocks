@@ -10,7 +10,9 @@ scores from different prompts or models are never silently mixed.
 """
 import hashlib
 import json
+import re
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -71,6 +73,14 @@ def validate(result, ids):
     return out
 
 
+# How `claude -p` reports an exhausted plan allowance (wording varies by version).
+LIMIT_PATTERN = re.compile(r'usage limit|limit reached|hit your limit|rate.?limit|resets? (at|in)', re.I)
+
+
+class UsageLimitError(RuntimeError):
+    """The plan's usage limit is exhausted; re-run after it resets (cached batches are kept)."""
+
+
 class MockBackend:
     """Deterministic keyword scorer used in tests (no network)."""
     name, model = 'mock', 'mock'
@@ -100,10 +110,12 @@ class ClaudeCodeBackend:
                    '--setting-sources', '', '--strict-mcp-config', '--disable-slash-commands']
         done = subprocess.run(command, input=format_batch(items), capture_output=True, text=True, timeout=self.timeout)
         if done.returncode != 0:
-            raise RuntimeError(f'claude -p failed ({done.returncode}): {done.stderr[:500] or done.stdout[:500]}')
+            message = f'claude -p failed ({done.returncode}): {done.stderr[:500] or done.stdout[:500]}'
+            raise (UsageLimitError if LIMIT_PATTERN.search(done.stderr+done.stdout) else RuntimeError)(message)
         envelope = json.loads(done.stdout)
         if envelope.get('is_error') or 'structured_output' not in envelope:
-            raise RuntimeError(f"claude -p returned no structured output: {str(envelope.get('result'))[:300]}")
+            message = f"claude -p returned no structured output: {str(envelope.get('result'))[:300]}"
+            raise (UsageLimitError if LIMIT_PATTERN.search(str(envelope.get('result'))) else RuntimeError)(message)
         models = list(envelope.get('modelUsage', {}))
         return envelope['structured_output'], {'model': models[0] if models else self.model,
                                                'usage': envelope.get('usage', {}),
@@ -160,13 +172,32 @@ class ExtractionCache:
         return pd.DataFrame(rows)
 
 
+def call_with_retry(backend, batch, retries=2, wait=30., log=print):
+    """Retry transient backend failures; a usage-limit error is raised at once."""
+    for attempt in range(retries+1):
+        try:
+            return backend(batch)
+        except UsageLimitError:
+            raise
+        except Exception as error:
+            if attempt == retries:
+                raise
+            if log:
+                log(f'batch failed ({str(error)[:200]}); retrying in {wait*(attempt+1):.0f} s')
+            time.sleep(wait*(attempt+1))
+
+
 def extract(items, backend, cache, model_alias, batch_size=25, log=print):
-    """Score uncached items in batches. Items need id = item_key(doc_id, ticker). Returns new row count."""
+    """Score uncached items in batches. Items need id = item_key(doc_id, ticker). Returns new row count.
+
+    Each batch is cached as soon as it returns, so an interrupted run (e.g. a
+    UsageLimitError) resumes where it stopped when called again.
+    """
     todo = [i for i in items if not cache.has(model_alias, i['id'])]
     added = 0
     for start in range(0, len(todo), batch_size):
         batch = todo[start:start+batch_size]
-        result, meta = backend(batch)
+        result, meta = call_with_retry(backend, batch, log=log)
         valid = validate(result, {i['id'] for i in batch})
         stamp = datetime.now(timezone.utc).isoformat(timespec='seconds')
         prompt_hash = hashlib.sha256(SYSTEM.encode()).hexdigest()[:12]
@@ -179,5 +210,5 @@ def extract(items, backend, cache, model_alias, batch_size=25, log=print):
         added += len(rows)
         if log:
             cost = meta.get('cost_usd_equivalent')
-            log(f'batch {start//batch_size+1}: {len(rows)}/{len(batch)} valid'+(f', ≈${cost:.4f} API-equivalent' if cost else ''))
+            log(f'batch {start//batch_size+1}/{-(-len(todo)//batch_size)}: {len(rows)}/{len(batch)} valid'+(f', ≈${cost:.4f} API-equivalent' if cost else ''))
     return added

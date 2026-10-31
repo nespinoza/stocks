@@ -7,16 +7,26 @@ Only documents published on or after --since are scored by the LLM (default:
 after Haiku 5.5's June 2026 training cutoff, so the evaluation is leak-free).
 
     .conda-env/bin/python scripts/score_news.py --limit 500
+
+Broad small/mid-cap universe (documents from collect_news.py --config ...):
+
+    NEWS_DIR=data_store/news_broad .conda-env/bin/python scripts/score_news.py \
+        --config configs/broad_universe.json --limit 100000
+
+Results are cached after every batch. If the plan's usage limit is reached the
+run stops with exit code 75; re-run the same command after the limit resets and
+it continues from the first unscored batch.
 """
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
 
-from stock_api.news import (AnthropicBackend, ClaudeCodeBackend, ExtractionCache, MockBackend, dedupe, extract,
-                            item_key, load_lm, tone)
+from stock_api.news import (AnthropicBackend, ClaudeCodeBackend, ExtractionCache, MockBackend, UsageLimitError, dedupe,
+                            extract, item_key, load_lm, tone)
 from stock_api.news.aggregate import assign_sessions
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,9 +40,10 @@ def main():
     parser.add_argument('--max-per-ticker-day', type=int, default=3)
     parser.add_argument('--limit', type=int, default=0, help='Max new LLM items this run (0 = no LLM step)')
     parser.add_argument('--batch-size', type=int, default=25)
+    parser.add_argument('--config', default=str(ROOT/'configs/news_universe.json'))
     args = parser.parse_args()
     news = Path(os.environ.get('NEWS_DIR', ROOT/'data_store/news'))
-    config = json.loads((ROOT/'configs/news_universe.json').read_text())
+    config = json.loads(Path(args.config).read_text())
     docs = [json.loads(line) for line in (news/'documents.jsonl').open() if line.strip()]
     frame = dedupe(docs)
     sessions = pd.bdate_range('2024-01-01', '2027-12-31')  # calendar days; exchange holidays matter little here
@@ -63,7 +74,13 @@ def main():
              for r in capped.sort_values('published_utc').itertuples()]
     todo = [i for i in items if not cache.has(args.model, i['id'])][:args.limit]
     print(f'LLM: {len(items)} eligible since {args.since}, {len(items)-len(todo)} cached or deferred, scoring {len(todo)}')
-    added = extract(todo, backend, cache, args.model, args.batch_size)
+    try:
+        added = extract(todo, backend, cache, args.model, args.batch_size)
+    except UsageLimitError as error:
+        left = sum(not cache.has(args.model, i['id']) for i in todo)
+        print(f'LLM: stopped at the usage limit with {left} items left ({error}).\n'
+              'Progress is saved; re-run the same command after the limit resets.', flush=True)
+        sys.exit(75)
     print(f'LLM: added {added} rows')
 
 
