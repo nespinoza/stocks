@@ -1,0 +1,19 @@
+{
+  "filings": 47204,
+  "with_prior": 40884,
+  "with_risk": 35574,
+  "companies": 1588,
+  "months": 90,
+  "first": "2019-04-30",
+  "last": "2026-09-30",
+  "best_gross_long_short": "risk_cosine",
+  "deflated_sharpe": {
+    "dsr": 0.26979089509773035,
+    "sharpe": -0.009669841292716965,
+    "threshold_sharpe": 0.004418004193762786,
+    "n_trials": 4,
+    "n": 1886
+  },
+  "factors_end": "2026-08-31",
+  "universe_built": "2026-10-30"
+}
